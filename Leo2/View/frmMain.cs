@@ -48,30 +48,6 @@ namespace Leo2.View
             treeList1.ExpandAll();
         }
 
-        private void btnUpdateAll_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
-        {
-
-            TreeListNode node = treeList1.Nodes[0]; // 先取得根结点
-            UpdateAll(node);
-            MessageBox.Show("分析完成");
-        }
-
-
-        private void UpdateAll(TreeListNode node)
-        {
-            foreach (TreeListNode child in node.Nodes)
-            {
-                if ((bool)child[treeIsSearch])
-                {
-                    m_controller.DownloadPageFromURL(int.Parse(child[treeOid].ToString()));
-                }
-
-                // 如果有子结点，就继续遍历
-                if (child.Nodes.Count > 0)
-                    UpdateAll(child);
-            }
-
-        }
 
         private void treeList1_Click(object sender, EventArgs e)
         {
@@ -114,13 +90,6 @@ namespace Leo2.View
                 }
             }
             gridView1.RefreshData();
-
-
-            //gridView1.SetFocusedRowCellValue(gridIsRead, true);
-
-            //// 显示网页
-            //string content = gridView1.GetFocusedRowCellValue(gridContent).ToString();
-            //webBrowser1.DocumentText = content;
         }
 
         // 更新树的已读数量
@@ -136,6 +105,64 @@ namespace Leo2.View
                 }
             }
             treeList1.RefreshDataSource();
+        }
+
+        private void treeList1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                popupMenu1.ShowPopup(e.Location);
+            }
+        }
+
+        private void btnUpdateAll_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            TreeListNode node = treeList1.Nodes[0]; // 先取得根结点
+            UpdateAll(node);
+            MessageBox.Show("更新完成");
+        }
+
+
+        private void btnUpdate_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            if (treeList1.FocusedNode == null)
+                return;
+
+            m_controller.DownloadPageFromURL(int.Parse(treeList1.FocusedNode[treeOid].ToString()));
+            MessageBox.Show("更新完成");
+        }
+
+        private void btnForceUpdateAll_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            TreeListNode node = treeList1.Nodes[0]; // 先取得根结点
+            UpdateAll(node, update_all:true);
+            MessageBox.Show("更新完成");
+        }
+
+        private void btnForceUpdate_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            if (treeList1.FocusedNode == null)
+                return;
+
+            m_controller.DownloadPageFromURL(int.Parse(treeList1.FocusedNode[treeOid].ToString()), update_all:true);
+            MessageBox.Show("更新完成");
+        }
+
+
+        private void UpdateAll(TreeListNode node, bool update_all = false)
+        {
+            foreach (TreeListNode child in node.Nodes)
+            {
+                if ((bool)child[treeIsSearch])
+                {
+                    m_controller.DownloadPageFromURL(int.Parse(child[treeOid].ToString()), update_all);
+                }
+
+                // 如果有子结点，就继续遍历
+                if (child.Nodes.Count > 0)
+                    UpdateAll(child);
+            }
+
         }
     }
 }

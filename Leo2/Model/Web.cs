@@ -158,7 +158,62 @@ namespace Leo2.Model
                 web01.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
                 web01.Save();
 
+                Web web06 = new Web();
+                web06.Parent_ID = web0.Oid;
+                web06.Name = "国有经济";
+                web06.URL = "http://www.sasac.gov.cn/n1180/n1271/n20515/n2697206/gyjj.html";
+                web06.Is_Search = true;
+                web06.List_URL_XPath = "//td[@class='black14']/a";
+                web06.Next_URL_XPath = "";
+                web06.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
+                web06.Save();
+
+                Web web07 = new Web();
+                web07.Parent_ID = web0.Oid;
+                web07.Name = "国资监管";
+                web07.URL = "http://www.sasac.gov.cn/n1180/n1271/n20515/n2697175/gzjg.html";
+                web07.Is_Search = true;
+                web07.List_URL_XPath = "//td[@class='black14']/a";
+                web07.Next_URL_XPath = "";
+                web07.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
+                web07.Save();
+
+                Web web03 = new Web();
+                web03.Parent_ID = web0.Oid;
+                web03.Name = "国资改革";
+                web03.URL = "http://www.sasac.gov.cn/n1180/n1271/n20515/n2697190/gqgg.html";
+                web03.Is_Search = true;
+                web03.List_URL_XPath = "//td[@class='black14']/a";
+                web03.Next_URL_XPath = "";
+                web03.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
+                web03.Save();
+
+                Web web04 = new Web();
+                web04.Parent_ID = web0.Oid;
+                web04.Name = "中央企业动态";
+                web04.URL = "http://www.sasac.gov.cn/n1180/n1226/n2410/index.html";
+                web04.Is_Search = true;
+                web04.List_URL_XPath = "//td[@class='black14']/a";
+                web04.Next_URL_XPath = "";
+                web04.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
+                web04.Save();
+
+                Web web05 = new Web();
+                web05.Parent_ID = web0.Oid;
+                web05.Name = "地方国资动态";
+                web05.URL = "http://www.sasac.gov.cn/n1180/n1271/n1286/n3891/index.html";
+                web05.Is_Search = true;
+                web05.List_URL_XPath = "//td[@class='black14']/a";
+                web05.Next_URL_XPath = "";
+                web05.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
+                web05.Save();
+
             }
+        }
+
+        public static void AddData()
+        {
+
         }
 
 

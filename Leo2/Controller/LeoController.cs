@@ -27,6 +27,7 @@ namespace Leo2.Controller
         public LeoController()
         {
             Web.InitWebData();
+            Web.AddData();
         }
 
         /// <summary>
@@ -44,14 +45,14 @@ namespace Leo2.Controller
         /// </summary>
         /// <param name="web_oid"></param>
         /// <returns></returns>
-        public List<Page> DownloadPageFromURL(int web_oid)
+        public List<Page> DownloadPageFromURL(int web_oid, bool update_all = false)
         {
             m_webs = new XPCollection<Web>();
             foreach (Web web in m_webs)
             {
                 if (web.Oid == web_oid)
                 {
-                    ListHelper.GetAndSavePagesOnList(web, web.URL);
+                    ListHelper.GetAndSavePagesOnList(web, web.URL, update_all);
                     SetUnreadCount(web, ListHelper.PageList.Count);
                     PageHelper.GetContentWithSave();
                     return ListHelper.PageList;
