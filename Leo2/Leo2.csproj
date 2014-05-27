@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F28E25B9-5E9A-4DF9-BCF2-A8CC0608B78C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Leo2</RootNamespace>
+    <AssemblyName>Leo2</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Leo2.Program</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>pro.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevExpress.Data.v13.2, Version=13.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Printing.v13.2.Core, Version=13.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Utils.v13.2, Version=13.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.Xpo.v13.2, Version=13.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraBars.v13.2, Version=13.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraEditors.v13.2, Version=13.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraGrid.v13.2, Version=13.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="DevExpress.XtraLayout.v13.2, Version=13.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraPrinting.v13.2, Version=13.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+    <Reference Include="DevExpress.XtraTreeList.v13.2, Version=13.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.6\lib\Net40\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.92.0\lib\net40\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6">
+      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.92.0\lib\net40\System.Data.SQLite.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq">
+      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.92.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controller\LeoController.cs" />
+    <Compile Include="Helper\ListHelper.cs" />
+    <Compile Include="Helper\PageHelper.cs" />
+    <Compile Include="Model\Page.cs" />
+    <Compile Include="Model\Web.cs" />
+    <Compile Include="View\frmMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\frmMain.Designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\frmWelcome.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\frmWelcome.Designer.cs">
+      <DependentUpon>frmWelcome.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="View\frmMain.resx">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="View\frmWelcome.resx">
+      <DependentUpon>frmWelcome.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="favicon.ico" />
+    <Content Include="pro.ico" />
+    <Content Include="x64\SQLite.Interop.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="x86\SQLite.Interop.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="zh-CN\DevExpress.Charts.Designer.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Dashboard.v13.2.Core.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Dashboard.v13.2.Web.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Dashboard.v13.2.Win.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Data.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.DataAccess.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.DataAccess.v13.2.UI.resources.dll" />
+    <Content Include="zh-CN\DevExpress.ExpressApp.HtmlPropertyEditor.Win.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.ExpressApp.PivotChart.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.ExpressApp.Reports.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.ExpressApp.Scheduler.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.ExpressApp.Scheduler.Web.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.ExpressApp.Security.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.ExpressApp.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.ExpressApp.Validation.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.ExpressApp.Web.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.ExpressApp.Win.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Office.v13.2.Core.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Pdf.v13.2.Core.resources.dll" />
+    <Content Include="zh-CN\DevExpress.PivotGrid.v13.2.Core.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Printing.v13.2.Core.resources.dll" />
+    <Content Include="zh-CN\DevExpress.RichEdit.v13.2.Core.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Snap.v13.2.Core.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Snap.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Spreadsheet.v13.2.Core.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Utils.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Utils.v13.2.UI.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Web.ASPxHtmlEditor.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Web.ASPxScheduler.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Web.ASPxSpellChecker.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Web.ASPxTreeList.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Web.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.Charts.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.Core.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.Docking.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.Gauges.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.Grid.v13.2.Core.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.LayoutControl.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.NavBar.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.Printing.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.PropertyGrid.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.ReportDesigner.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.Ribbon.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.RichEdit.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.Scheduler.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpf.SpellChecker.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.Xpo.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraBars.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraCharts.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraCharts.v13.2.Wizard.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraEditors.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraGauges.v13.2.Core.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraGauges.v13.2.Presets.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraGrid.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraLayout.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraNavBar.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraPdfViewer.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraPivotGrid.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraPrinting.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraReports.v13.2.Extensions.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraReports.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraReports.v13.2.Web.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraRichEdit.v13.2.Extensions.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraRichEdit.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraScheduler.v13.2.Core.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraScheduler.v13.2.Extensions.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraScheduler.v13.2.Reporting.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraScheduler.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraSpellChecker.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraSpreadsheet.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraTreeList.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraVerticalGrid.v13.2.resources.dll" />
+    <Content Include="zh-CN\DevExpress.XtraWizard.v13.2.resources.dll" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
