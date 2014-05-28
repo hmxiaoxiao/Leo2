@@ -36,9 +36,9 @@ namespace Leo2
             // 显示主窗口
             //SplashScreenManager.ShowForm(typeof(frmWelcome), true, true);
             LeoController mainController = new LeoController();
-            //mainController.RunTest();
-            mainController.View = new frmMain(mainController);
-            Application.Run(mainController.View);
+            mainController.RunTest();
+            //mainController.View = new frmMain(mainController);
+            //Application.Run(mainController.View);
         }
     }
 }

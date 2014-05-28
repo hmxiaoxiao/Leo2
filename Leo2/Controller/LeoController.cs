@@ -54,7 +54,7 @@ namespace Leo2.Controller
                 {
                     ListHelper.GetAndSavePagesOnList(web, web.URL, update_all);
                     SetUnreadCount(web, ListHelper.PageList.Count);
-                    PageHelper.GetContentWithSave();
+                    PageHelper.GetAllContentWithSave();
                     return ListHelper.PageList;
                 }
             }
@@ -109,29 +109,35 @@ Update Web set unread = (select count(*)
 
         public void RunTest()
         {
+            //RunTestLink();
+            RunTestPage();
+
+            Console.WriteLine("测试完成,按任意键退出！");
+            Console.ReadKey();
+        }
+
+
+        //测试联接
+        public void RunTestLink()
+        {
             XPQuery<Web> webQuery = new XPQuery<Web>(XpoDefault.Session);
 
             // 测试国资委
             var webs = from w in webQuery
-                       where w.Name == "国资要闻"
+                       where w.Name == "重要新闻"
                        select w;
 
             ListHelper.PageList.Clear();
             foreach (Web web in webs)
             {
                 ListHelper.GetAndSavePagesOnList(web, web.URL);
-                //Page.BatchSave(ListHelper.PageList, web);  // 将分析出来的联接保存到数据库里
-
             }
+        }
 
-            // 保存每个没有下载的页面的内容
-            //PageHelper.GetContentWithSave();
-
-
-
-            Console.WriteLine("测试完成,按任意键退出！");
-            Console.ReadKey();
-
+        // 测试页面
+        public void RunTestPage()
+        {
+            PageHelper.GetSingleContentWithSave(7924);
         }
     }
 }

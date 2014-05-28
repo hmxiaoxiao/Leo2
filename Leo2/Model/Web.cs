@@ -208,6 +208,147 @@ namespace Leo2.Model
                 web05.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
                 web05.Save();
 
+                Web web10 = new Web();
+                web10.Parent_ID = 0;
+                web10.Name = "中核网";
+                web10.Is_Search = false;
+                web10.Save();
+
+                Web web11 = new Web();
+                web11.Parent_ID = web10.Oid;
+                web11.Name = "中核要闻";
+                web11.URL = "http://www.cnnc.com.cn/tabid/293/Default.aspx";
+                web11.Is_Search = true;
+                web11.List_URL_XPath = "//td[@id='newslist']/a";
+                web11.Next_URL_XPath = "";
+                web11.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
+                web11.Save();
+
+                Web web12 = new Web();
+                web12.Parent_ID = web10.Oid;
+                web12.Name = "集团快讯";
+                web12.URL = "http://www.cnnc.com.cn/publish/portal0/tab664/module2138/more.htm";
+                web12.Is_Search = true;
+                web12.List_URL_XPath = "//td[@id='newslist']/a";
+                web12.Next_URL_XPath = "";
+                web12.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
+                web12.Save();
+
+                Web web13 = new Web();
+                web13.Parent_ID = web10.Oid;
+                web13.Name = "一线动态";
+                web13.URL = "http://www.cnnc.com.cn/publish/portal0/tab664/module2125/more.htm";
+                web13.Is_Search = true;
+                web13.List_URL_XPath = "//td[@id='newslist']/a";
+                web13.Next_URL_XPath = "";
+                web13.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
+                web13.Save();
+
+                Web web14 = new Web();
+                web14.Parent_ID = web10.Oid;
+                web14.Name = "综合资讯";
+                web14.URL = "http://www.cnnc.com.cn/publish/portal0/tab664/module2127/more.htm";
+                web14.Is_Search = true;
+                web14.List_URL_XPath = "//td[@id='newslist']/a";
+                web14.Next_URL_XPath = "";
+                web14.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
+                web14.Save();
+
+                Web web15 = new Web();
+                web15.Parent_ID = web10.Oid;
+                web15.Name = "媒体聚焦";
+                web15.URL = "http://www.cnnc.com.cn/publish/portal0/tab664/module2126/more.htm";
+                web15.Is_Search = true;
+                web15.List_URL_XPath = "//td[@id='newslist']/a";
+                web15.Next_URL_XPath = "";
+                web15.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
+                web15.Save();
+
+                Web web16 = new Web();
+                web16.Parent_ID = web10.Oid;
+                web16.Name = "风采中核";
+                web16.URL = "http://www.cnnc.com.cn/publish/portal0/tab664/module2128/more.htm";
+                web16.Is_Search = true;
+                web16.List_URL_XPath = "//td[@id='newslist']/a";
+                web16.Next_URL_XPath = "";
+                web16.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
+                web16.Save();
+
+                Web web20 = new Web();
+                web20.Parent_ID = 0;
+                web20.Name = "中核建";
+                web20.Is_Search = false;
+                web20.Save();
+
+                Web web21 = new Web();
+                web21.Parent_ID = web20.Oid;
+                web21.Name = "重要新闻";
+                web21.URL = "http://www.cnecc.com/g783/m877/mp1.aspx";
+                web21.Is_Search = true;
+                web21.List_URL_XPath = "//div[@class='xwzx-ywzd-item-title']/a";
+                web21.Next_URL_XPath = "//a[@class='i-pager-next']";
+                web21.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
+                web21.Save();
+
+                Web web22 = new Web();
+                web22.Parent_ID = web20.Oid;
+                web22.Name = "公司新闻";
+                web22.URL = "http://www.cnecc.com/g293.aspx";
+                web22.Is_Search = true;
+                web22.List_URL_XPath = "//div[@class='xwzx-ywzd-item-title']/a";
+                web22.Next_URL_XPath = "//a[@class='i-pager-next']";
+                web22.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
+                web22.Save();
+
+                Web web23 = new Web();
+                web23.Parent_ID = web20.Oid;
+                web23.Name = "图片新闻";
+                web23.URL = "http://www.cnecc.com/g783/m877/mp1.aspx";
+                web23.Is_Search = true;
+                web23.List_URL_XPath = "//div[@class='xwzx-ywzd-item-title']/a";
+                web23.Next_URL_XPath = "//a[@class='i-pager-next']";
+                web23.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
+                web23.Save();
+
+                Web web24 = new Web();
+                web24.Parent_ID = web20.Oid;
+                web24.Name = "国资动态";
+                web24.URL = "http://www.cnecc.com/g672/m1574.aspx";
+                web24.Is_Search = true;
+                web24.List_URL_XPath = "//div[@class='xwzx-ywzd-item-title']/a";
+                web24.Next_URL_XPath = "//a[@class='i-pager-next']";
+                web24.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
+                web24.Save();
+
+                Web web25 = new Web();
+                web25.Parent_ID = web20.Oid;
+                web25.Name = "关注与视野";
+                web25.URL = "http://www.cnecc.com/g687/m1575.aspx";
+                web25.Is_Search = true;
+                web25.List_URL_XPath = "//div[@class='xwzx-ywzd-item-title']/a";
+                web25.Next_URL_XPath = "//a[@class='i-pager-next']";
+                web25.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
+                web25.Save();
+
+                Web web26 = new Web();
+                web26.Parent_ID = web20.Oid;
+                web26.Name = "工程动态";
+                web26.URL = "http://www.cnecc.com/g295.aspx";
+                web26.Is_Search = true;
+                web26.List_URL_XPath = "//div[@class='xwzx-ywzd-item-title']/a";
+                web26.Next_URL_XPath = "//a[@class='i-pager-next']";
+                web26.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
+                web26.Save();
+
+                Web web27 = new Web();
+                web27.Parent_ID = web20.Oid;
+                web27.Name = "行业资讯";
+                web27.URL = "http://www.cnecc.com/g299.aspx";
+                web27.Is_Search = true;
+                web27.List_URL_XPath = "//div[@class='xwzx-ywzd-item-title']/a";
+                web27.Next_URL_XPath = "//a[@class='i-pager-next']";
+                web27.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
+                web27.Save();
             }
         }
 

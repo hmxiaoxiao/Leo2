@@ -12,47 +12,68 @@ namespace Leo2.Helper
 {
     public class PageHelper
     {
-        public static void GetContentWithSave()
+        /// <summary>
+        /// 下载所有的未下载网页的内容
+        /// </summary>
+        public static void GetAllContentWithSave()
         {
-            XPCollection<Web> webs = new XPCollection<Web>();
-
             XPQuery<Page> pageQuery = new XPQuery<Page>(XpoDefault.Session);
             var pages = from p in pageQuery
                        where p.Is_Down == false
                        select p;
+
+            foreach (Page p in pages)
+            {
+                GetSingleContentWithSave(p);
+            }
+        }
+
+        /// <summary>
+        /// 下载指定网页的内容
+        /// </summary>
+        /// <param name="p"></param>
+        public static void GetSingleContentWithSave(Page p)
+        {
+#if DEBUG
+            Console.WriteLine(p.URL);
+#endif
             HtmlWeb htmlweb = new HtmlWeb();
             HtmlDocument doc;
 
-            using (UnitOfWork uow = new UnitOfWork())
+            // 先取得该页面的XPath
+            foreach (Web w in new XPCollection<Web>())
             {
-                foreach (Page p in pages)
+                if (w.Oid == p.Parent_ID)
                 {
-#if DEBUG
-                    Console.WriteLine(p.URL);
-#endif
-                    // 先取得该页面的XPath
-                    foreach (Web w in webs)
+                    doc = htmlweb.Load(p.URL);
+                    string[] xpaths = w.Page_XPath.Split('|');
+                    foreach (string xpath in xpaths)
                     {
-                        if (w.Oid == p.Parent_ID)
-                        {
-                            doc = htmlweb.Load(p.URL);
-                            HtmlNodeCollection firstpage = doc.DocumentNode.SelectNodes(w.Page_XPath);
+                        HtmlNodeCollection firstpage = doc.DocumentNode.SelectNodes(xpath);
 
-                            if (firstpage != null && firstpage.Count >= 1)
-                            {
-                                p.CDate = Regex.Match(doc.DocumentNode.InnerHtml, @"\d{2,4}-\d{2}-\d{2}").Value;
-                                p.Content = firstpage[0].InnerHtml;
-                                p.Is_Down = true;
-                                p.Save();
-                            }
+                        if (firstpage != null && firstpage.Count >= 1)
+                        {
+                            p.CDate = Regex.Match(doc.DocumentNode.InnerHtml, @"\d{2,4}-\d{2}-\d{2}").Value;
+                            p.Content = firstpage[0].InnerHtml;
+                            p.Is_Down = true;
+                            p.Save();
                         }
                     }
-
                 }
-                uow.CommitChanges();
             }
+        }
 
+        public static void GetSingleContentWithSave(int page_oid)
+        {
+            XPQuery<Page> pageQuery = new XPQuery<Page>(XpoDefault.Session);
+            var pages = from p in pageQuery
+                        where p.Oid == page_oid
+                        select p;
 
+            foreach (Page page in pages)
+            {
+                GetSingleContentWithSave(page);
+            }
         }
 
 

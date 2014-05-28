@@ -146,14 +146,37 @@ namespace Leo2.Helper
             string next_url = "";
 
             HtmlDocument doc = GetHtmlDocument(list_page_url);
-            HtmlNodeCollection lists = doc.DocumentNode.SelectNodes("//a");
-            foreach (HtmlNode node in lists)
+            HtmlNodeCollection lists;
+            if (string.IsNullOrEmpty(web.Next_URL_XPath))
             {
-                if (node.InnerText == "下一页")
+                lists = doc.DocumentNode.SelectNodes("//a");
+                foreach (HtmlNode node in lists)
                 {
-                    next_url = node.Attributes["href"].Value;
-                    if (next_url.Substring(0, 1) == "/")
-                        next_url = web_root + next_url;
+                    if (node.InnerText == "下一页")
+                    {
+                        if (node.Attributes["href"] != null)        // 如果没有href属性的话，就跳过
+                        {
+                            next_url = node.Attributes["href"].Value;
+                            if (next_url.Substring(0, 1) == "/")
+                                next_url = web_root + next_url;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                lists = doc.DocumentNode.SelectNodes(web.Next_URL_XPath);
+                if (lists != null)
+                {
+                    foreach (HtmlNode node in lists)
+                    {
+                        if (node.Attributes["href"] != null)        // 如果没有href属性的话，就跳过
+                        {
+                            next_url = node.Attributes["href"].Value;
+                            if (next_url.Substring(0, 1) == "/")
+                                next_url = web_root + next_url;
+                        }
+                    }
                 }
             }
             return next_url;

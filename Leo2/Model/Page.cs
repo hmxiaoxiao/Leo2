@@ -169,23 +169,6 @@ a:visited {text-decoration: none}
 
 
         /// <summary>
-        /// 批量保存数据
-        /// </summary>
-        /// <param name="lists"></param>
-        /// <param name="web"></param>
-        public static void BatchSave(List<Page> lists, Web web)
-        {
-            using (UnitOfWork uow = new UnitOfWork())
-            {
-                foreach (Page p in lists)
-                    p.Save();
-                    //p.Session = XpoDefault.Session;        
-                
-                uow.CommitChanges();
-            }
-        }
-
-        /// <summary>
         /// 设置当前网页已读
         /// </summary>
         public void HasRead()
