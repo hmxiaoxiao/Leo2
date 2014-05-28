@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition styleFormatCondition4 = new DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition();
+            DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition styleFormatCondition1 = new DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
-            DevExpress.XtraGrid.StyleFormatCondition styleFormatCondition6 = new DevExpress.XtraGrid.StyleFormatCondition();
+            DevExpress.XtraGrid.StyleFormatCondition styleFormatCondition2 = new DevExpress.XtraGrid.StyleFormatCondition();
             this.treeUnread = new DevExpress.XtraTreeList.Columns.TreeListColumn();
             this.gridIsRead = new DevExpress.XtraGrid.Columns.GridColumn();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -57,6 +57,9 @@
             this.barManager1 = new DevExpress.XtraBars.BarManager(this.components);
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.btnUpdateAll = new DevExpress.XtraBars.BarButtonItem();
+            this.btnUpdate = new DevExpress.XtraBars.BarButtonItem();
+            this.btnForceUpdateAll = new DevExpress.XtraBars.BarButtonItem();
+            this.btnForceUpdate = new DevExpress.XtraBars.BarButtonItem();
             this.bar3 = new DevExpress.XtraBars.Bar();
             this.barDockControlTop = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
@@ -67,9 +70,6 @@
             this.repositoryItemButtonEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemButtonEdit();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.popupMenu1 = new DevExpress.XtraBars.PopupMenu(this.components);
-            this.btnUpdate = new DevExpress.XtraBars.BarButtonItem();
-            this.btnForceUpdateAll = new DevExpress.XtraBars.BarButtonItem();
-            this.btnForceUpdate = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -119,6 +119,10 @@
             // 
             // treeList1
             // 
+            this.treeList1.Appearance.SelectedRow.BackColor = System.Drawing.Color.Navy;
+            this.treeList1.Appearance.SelectedRow.ForeColor = System.Drawing.Color.White;
+            this.treeList1.Appearance.SelectedRow.Options.UseBackColor = true;
+            this.treeList1.Appearance.SelectedRow.Options.UseForeColor = true;
             this.treeList1.Columns.AddRange(new DevExpress.XtraTreeList.Columns.TreeListColumn[] {
             this.treeOid,
             this.treeName,
@@ -131,14 +135,14 @@
             this.treeUnread,
             this.treeTitle});
             this.treeList1.Dock = System.Windows.Forms.DockStyle.Fill;
-            styleFormatCondition4.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            styleFormatCondition4.Appearance.Options.UseFont = true;
-            styleFormatCondition4.ApplyToRow = true;
-            styleFormatCondition4.Column = this.treeUnread;
-            styleFormatCondition4.Condition = DevExpress.XtraGrid.FormatConditionEnum.Greater;
-            styleFormatCondition4.Value1 = ((long)(0));
+            styleFormatCondition1.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            styleFormatCondition1.Appearance.Options.UseFont = true;
+            styleFormatCondition1.ApplyToRow = true;
+            styleFormatCondition1.Column = this.treeUnread;
+            styleFormatCondition1.Condition = DevExpress.XtraGrid.FormatConditionEnum.Greater;
+            styleFormatCondition1.Value1 = ((long)(0));
             this.treeList1.FormatConditions.AddRange(new DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition[] {
-            styleFormatCondition4});
+            styleFormatCondition1});
             this.treeList1.Location = new System.Drawing.Point(0, 0);
             this.treeList1.Name = "treeList1";
             this.treeList1.BeginUnboundLoad();
@@ -295,14 +299,14 @@
             this.gridIsRead,
             this.gridOid,
             this.gridParentID});
-            styleFormatCondition6.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            styleFormatCondition6.Appearance.Options.UseFont = true;
-            styleFormatCondition6.ApplyToRow = true;
-            styleFormatCondition6.Column = this.gridIsRead;
-            styleFormatCondition6.Condition = DevExpress.XtraGrid.FormatConditionEnum.Equal;
-            styleFormatCondition6.Value1 = false;
+            styleFormatCondition2.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            styleFormatCondition2.Appearance.Options.UseFont = true;
+            styleFormatCondition2.ApplyToRow = true;
+            styleFormatCondition2.Column = this.gridIsRead;
+            styleFormatCondition2.Condition = DevExpress.XtraGrid.FormatConditionEnum.Equal;
+            styleFormatCondition2.Value1 = false;
             this.gridView1.FormatConditions.AddRange(new DevExpress.XtraGrid.StyleFormatCondition[] {
-            styleFormatCondition6});
+            styleFormatCondition2});
             this.gridView1.GridControl = this.gridControl1;
             this.gridView1.Name = "gridView1";
             this.gridView1.OptionsBehavior.Editable = false;
@@ -393,6 +397,33 @@
             this.btnUpdateAll.Name = "btnUpdateAll";
             this.btnUpdateAll.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnUpdateAll_ItemClick);
             // 
+            // btnUpdate
+            // 
+            this.btnUpdate.Caption = "更新";
+            this.btnUpdate.Glyph = ((System.Drawing.Image)(resources.GetObject("btnUpdate.Glyph")));
+            this.btnUpdate.Id = 5;
+            this.btnUpdate.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnUpdate.LargeGlyph")));
+            this.btnUpdate.Name = "btnUpdate";
+            this.btnUpdate.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnUpdate_ItemClick);
+            // 
+            // btnForceUpdateAll
+            // 
+            this.btnForceUpdateAll.Caption = "强制全部更新";
+            this.btnForceUpdateAll.Glyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdateAll.Glyph")));
+            this.btnForceUpdateAll.Id = 6;
+            this.btnForceUpdateAll.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdateAll.LargeGlyph")));
+            this.btnForceUpdateAll.Name = "btnForceUpdateAll";
+            this.btnForceUpdateAll.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnForceUpdateAll_ItemClick);
+            // 
+            // btnForceUpdate
+            // 
+            this.btnForceUpdate.Caption = "强制更新";
+            this.btnForceUpdate.Glyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdate.Glyph")));
+            this.btnForceUpdate.Id = 7;
+            this.btnForceUpdate.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdate.LargeGlyph")));
+            this.btnForceUpdate.Name = "btnForceUpdate";
+            this.btnForceUpdate.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnForceUpdate_ItemClick);
+            // 
             // bar3
             // 
             this.bar3.BarName = "Status bar";
@@ -474,33 +505,6 @@
             new DevExpress.XtraBars.LinkPersistInfo(this.btnForceUpdate)});
             this.popupMenu1.Manager = this.barManager1;
             this.popupMenu1.Name = "popupMenu1";
-            // 
-            // btnUpdate
-            // 
-            this.btnUpdate.Caption = "更新";
-            this.btnUpdate.Glyph = ((System.Drawing.Image)(resources.GetObject("btnUpdate.Glyph")));
-            this.btnUpdate.Id = 5;
-            this.btnUpdate.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnUpdate.LargeGlyph")));
-            this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnUpdate_ItemClick);
-            // 
-            // btnForceUpdateAll
-            // 
-            this.btnForceUpdateAll.Caption = "强制全部更新";
-            this.btnForceUpdateAll.Glyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdateAll.Glyph")));
-            this.btnForceUpdateAll.Id = 6;
-            this.btnForceUpdateAll.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdateAll.LargeGlyph")));
-            this.btnForceUpdateAll.Name = "btnForceUpdateAll";
-            this.btnForceUpdateAll.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnForceUpdateAll_ItemClick);
-            // 
-            // btnForceUpdate
-            // 
-            this.btnForceUpdate.Caption = "强制更新";
-            this.btnForceUpdate.Glyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdate.Glyph")));
-            this.btnForceUpdate.Id = 7;
-            this.btnForceUpdate.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdate.LargeGlyph")));
-            this.btnForceUpdate.Name = "btnForceUpdate";
-            this.btnForceUpdate.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnForceUpdate_ItemClick);
             // 
             // frmMain
             // 

@@ -133,17 +133,11 @@ namespace Leo2.Model
         /// </summary>
         public static void InitWebData()
         {
-            XPCollection<Web> webs = new XPCollection<Web>(Web.Fields.Name == "网站列表");
+            XPCollection<Web> webs = new XPCollection<Web>();
             if (webs.Count == 0)
             {
-                Web root = new Web();
-                root.Parent_ID = 0;
-                root.Name = "网站列表";
-                root.Is_Search = false;
-                root.Save();
-
                 Web web0 = new Web();
-                web0.Parent_ID = root.Oid;
+                web0.Parent_ID = 0;
                 web0.Name = "国资委";
                 web0.Is_Search = false;
                 web0.Save();
@@ -299,16 +293,6 @@ namespace Leo2.Model
                 web22.Next_URL_XPath = "//a[@class='i-pager-next']";
                 web22.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
                 web22.Save();
-
-                Web web23 = new Web();
-                web23.Parent_ID = web20.Oid;
-                web23.Name = "图片新闻";
-                web23.URL = "http://www.cnecc.com/g783/m877/mp1.aspx";
-                web23.Is_Search = true;
-                web23.List_URL_XPath = "//div[@class='xwzx-ywzd-item-title']/a";
-                web23.Next_URL_XPath = "//a[@class='i-pager-next']";
-                web23.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
-                web23.Save();
 
                 Web web24 = new Web();
                 web24.Parent_ID = web20.Oid;
