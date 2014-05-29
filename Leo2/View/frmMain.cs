@@ -126,8 +126,8 @@ namespace Leo2.View
 
         private void btnUpdate_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            SplashScreenManager.CloseForm();
-            SplashScreenManager.ShowForm(typeof(frmWelcome), true, true);
+            //SplashScreenManager.CloseForm();
+            //SplashScreenManager.ShowForm(typeof(frmWelcome), true, true);
             if (treeList1.FocusedNode == null)
                 return;
 

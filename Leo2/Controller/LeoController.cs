@@ -109,7 +109,7 @@ Update Web set unread = (select count(*)
 
         public void RunTest()
         {
-            //RunTestLink();
+            RunTestLink();
             RunTestPage();
 
             Console.WriteLine("测试完成,按任意键退出！");
@@ -120,24 +120,24 @@ Update Web set unread = (select count(*)
         //测试联接
         public void RunTestLink()
         {
-            XPQuery<Web> webQuery = new XPQuery<Web>(XpoDefault.Session);
+            //XPQuery<Web> webQuery = new XPQuery<Web>(XpoDefault.Session);
 
-            // 测试国资委
-            var webs = from w in webQuery
-                       where w.Name == "重要新闻"
-                       select w;
+            //// 测试国资委
+            //var webs = from w in webQuery
+            //           where w.Name == "集团新闻"
+            //           select w;
 
-            ListHelper.PageList.Clear();
-            foreach (Web web in webs)
-            {
-                ListHelper.GetAndSavePagesOnList(web, web.URL);
-            }
+            //ListHelper.PageList.Clear();
+            //foreach (Web web in webs)
+            //{
+            //    ListHelper.GetAndSavePagesOnList(web, web.URL);
+            //}
         }
 
         // 测试页面
         public void RunTestPage()
         {
-            PageHelper.GetSingleContentWithSave(7924);
+            PageHelper.GetSingleContentWithSave(24483);
         }
     }
 }

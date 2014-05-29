@@ -25,13 +25,15 @@ namespace Leo2.Helper
         /// </summary>
         /// <param name="url">网址(必须以http为前缀)</param>
         /// <returns>网页的HtmlDocument</returns>
-        private static HtmlDocument GetHtmlDocument(string url)
+        private static HtmlDocument GetHtmlDocument(Web web, string url)
         {
             // 如果之前已经读取过相同的网页就直接返回
             if (m_pagecache.ContainsKey(url))
                 return (HtmlDocument)m_pagecache[url];
 
             HtmlWeb webpage = new HtmlWeb();
+            if(!string.IsNullOrEmpty(web.Encoding))
+                webpage.OverrideEncoding = Encoding.GetEncoding(web.Encoding);
             HtmlDocument doc = webpage.Load(url);   // 设置要读取的网页地址
             m_pagecache.Add(url, doc);
 
@@ -52,19 +54,57 @@ namespace Leo2.Helper
         /// 成功或者失败
         /// 成功后，分析出来的页面联接会放在静态变量PageList里。
         /// </returns>
-        public static bool GetAndSavePagesOnList(Web web, string list_page_url, bool update_all = false)
+        public static void GetAndSavePagesOnList(Web web, string list_page_url, bool update_all = false)
+        {
+            // 如果下载规则一切正常，就开始下载
+            if (!VerifyWebInfo(web))
+                return;
+
+            // 下载该列表下的page联接
+            bool find_exist_url = GetAndSavePagesOnListPage(web, list_page_url);
+
+
+            // 如果已经找到有重复的记录，且不需全部更新话，就不再扫描下一页了
+            if (!(find_exist_url == true && update_all == false))
+            {
+                string next_url = GetNextLinkOnList(web, list_page_url);
+                if (!string.IsNullOrEmpty(next_url))
+                    GetAndSavePagesOnList(web, next_url, update_all);
+            }
+
+            return;
+        }
+
+        /// <summary>
+        /// 校验WEB的数据是否正确
+        /// </summary>
+        /// <param name="web"></param>
+        /// <returns></returns>
+        public static bool VerifyWebInfo(Web web)
         {
             // 如果下载规则一切正常，就开始下载
             if (!(web != null && web.Is_Search && !string.IsNullOrEmpty(web.List_URL_XPath)))
                 return false;
+            return true;
+        }
 
-            bool find_exist_url = false;
-
-            HtmlDocument doc = GetHtmlDocument(list_page_url);
+        /// <summary>
+        /// 保存指定列表中的所有的页面数据
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="list_url"></param>
+        /// <returns>有已经存在的，返回真，否则返回假</returns>
+        public static bool GetAndSavePagesOnListPage(Web web, string list_url)
+        {
+            // 先取得网站的前缀，有些联接是不加域名的。
             Uri u = new Uri(web.URL);
             string WEB_ROOT = "http://" + u.Authority;
 
-            // 获取方式
+            // 是否有已经存在的页面
+            bool find_exist_url = false;
+
+            // 取得列表面的内容
+            HtmlDocument doc = GetHtmlDocument(web, list_url);
             HtmlNodeCollection lists = doc.DocumentNode.SelectNodes(web.List_URL_XPath);
 
             // 如果没有内容的话，直接返回
@@ -79,20 +119,26 @@ namespace Leo2.Helper
                     // 取所有的列表
                     foreach (HtmlNode node in lists)
                     {
-                        // 补全地址！
+                        // 取得联接，如果需要补全地址！
                         string url = node.Attributes["href"].Value;
                         if (url.Substring(0, 1) == "/")
                             url = WEB_ROOT + url;
+                        if(url.Substring(0,2) == "..")
+                        {
+                            url = "http://" + u.Authority;
+                            for (int i = 0; i < u.Segments.Count() - 1; i++)
+                                url += u.Segments[i];
+                            url += node.Attributes["href"].Value;
+                        }
 
-                        // 判断是否重复
+                        // 判断是否重复，如没有重复，就保存到页面上去
                         XPQuery<Page> pageQuery = new XPQuery<Page>(XpoDefault.Session);
                         var pages = from page in pageQuery
                                     where page.URL == url
                                     select page;
                         if (pages.Count() == 0)
                         {
-
-                            string title;
+                            string title;       // 网页的标题 
                             if (node.Attributes["title"] != null)
                                 title = node.Attributes["title"].Value;
                             else
@@ -113,25 +159,41 @@ namespace Leo2.Helper
                             find_exist_url = true;
                         }
                     }
-                    uow.CommitChanges();
+                    uow.CommitChanges();        //  保存所有的数据
 #if DEBUG
                     TimeSpan sp = new TimeSpan(DateTime.Now.Ticks - dt_now.Ticks);
-                    Console.WriteLine(sp.TotalMilliseconds);
+                    Console.WriteLine("总共时间为（毫秒）：" + sp.TotalMilliseconds.ToString());
 #endif
                 }
             }
-
-            // 如果已经找到有重复的记录，且不需全部更新话，就不再扫描下一页了
-            if (!(find_exist_url == true && update_all == false))
-            {
-                string next_url = GetNextLinkOnList(web, list_page_url);
-                if (!string.IsNullOrEmpty(next_url))
-                    GetAndSavePagesOnList(web, next_url);
-            }
-
-            return true;
+            return find_exist_url;
         }
 
+
+        public static void CustomerScan(Web web, string list_page_url)
+        {
+            Uri u = new Uri(list_page_url);
+            switch (web.Next_URL_XPath)
+            {
+                case "customer1":
+                    HtmlDocument doc = GetHtmlDocument(web, list_page_url);
+                    HtmlNodeCollection lists = doc.DocumentNode.SelectNodes("//div[@style='display:none']/a");
+                    foreach (HtmlNode node in lists)
+                    {
+                        // 生成所有的列表联接
+                        string url = "http://" + u.Authority;
+                        for (int i = 0; i < u.Segments.Count()-1; i++)
+                        {
+                            url += u.Segments[i];
+                        }
+                        url += node.Attributes["href"].Value;
+
+                        // 下载页面
+                        GetAndSavePagesOnListPage(web, url);
+                    }
+                    break;
+            }
+        }
 
         /// <summary>
         /// 根据列表地址，取出下一页的列表地址
@@ -141,29 +203,38 @@ namespace Leo2.Helper
         /// <returns>下一页的地址</returns>
         public static string GetNextLinkOnList(Web web, string list_page_url)
         {
-            Uri u = new Uri(web.URL);
-            string web_root = "http://" + u.Authority;
+
+            if (web.Next_URL_XPath.IndexOf("customer") >= 0)
+            {
+                CustomerScan(web, list_page_url);
+                return "";
+            }
+
+
             string next_url = "";
 
-            HtmlDocument doc = GetHtmlDocument(list_page_url);
+            string[] next_title = new string[] { "下一页", "下页" };
+            HtmlDocument doc = GetHtmlDocument(web, list_page_url);
             HtmlNodeCollection lists;
-            if (string.IsNullOrEmpty(web.Next_URL_XPath))
+            if (string.IsNullOrEmpty(web.Next_URL_XPath))       // 如果有指定的下一页的方法，就按指定的方法取
             {
                 lists = doc.DocumentNode.SelectNodes("//a");
-                foreach (HtmlNode node in lists)
+                if (lists != null)
                 {
-                    if (node.InnerText == "下一页")
+                    foreach (HtmlNode node in lists)
                     {
-                        if (node.Attributes["href"] != null)        // 如果没有href属性的话，就跳过
+                        foreach (string title in next_title)
                         {
-                            next_url = node.Attributes["href"].Value;
-                            if (next_url.Substring(0, 1) == "/")
-                                next_url = web_root + next_url;
+                            if (node.InnerText == title)
+                            {
+                                if (node.Attributes["href"] != null)        // 如果没有href属性的话，就跳过
+                                    next_url = GeneNextLinkURL(web, list_page_url, node.Attributes["href"].Value);
+                            }
                         }
                     }
                 }
             }
-            else
+            else   //  按默认的方法 取下一页的联接
             {
                 lists = doc.DocumentNode.SelectNodes(web.Next_URL_XPath);
                 if (lists != null)
@@ -171,15 +242,42 @@ namespace Leo2.Helper
                     foreach (HtmlNode node in lists)
                     {
                         if (node.Attributes["href"] != null)        // 如果没有href属性的话，就跳过
-                        {
-                            next_url = node.Attributes["href"].Value;
-                            if (next_url.Substring(0, 1) == "/")
-                                next_url = web_root + next_url;
-                        }
+                            next_url = GeneNextLinkURL(web, list_page_url, node.Attributes["href"].Value);
                     }
                 }
             }
             return next_url;
+        }
+
+
+        /// <summary>
+        /// 取得下一页的列表的URL
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="current_url"></param>
+        /// <param name="next_url"></param>
+        /// <returns></returns>
+        private static string GeneNextLinkURL(Web web, string current_url, string next_url)
+        {
+            Uri u = new Uri(web.URL);
+            string web_root = "http://" + u.Authority;
+            string real_next_url = "";
+
+            if (next_url.Substring(0, 1) == "/")
+                next_url = web_root + next_url;
+            if (next_url.IndexOf("/") < 0)
+            {
+                real_next_url = web_root;
+                for (int i = 0; i < u.Segments.Count() - 1; i++)
+                {
+                    real_next_url += u.Segments[i];
+                }
+                if (u.Segments[u.Segments.Count()-1].IndexOf("/") >= 0)
+                    real_next_url += u.Segments[u.Segments.Count()-1];
+                real_next_url += next_url;
+            }
+
+            return real_next_url;
         }
     }
 }

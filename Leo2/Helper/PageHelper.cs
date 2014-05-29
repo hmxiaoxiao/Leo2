@@ -45,6 +45,8 @@ namespace Leo2.Helper
             {
                 if (w.Oid == p.Parent_ID)
                 {
+                    if (!string.IsNullOrEmpty(w.Encoding))
+                        htmlweb.OverrideEncoding = Encoding.GetEncoding(w.Encoding);
                     doc = htmlweb.Load(p.URL);
                     string[] xpaths = w.Page_XPath.Split('|');
                     foreach (string xpath in xpaths)
@@ -54,6 +56,8 @@ namespace Leo2.Helper
                         if (firstpage != null && firstpage.Count >= 1)
                         {
                             p.CDate = Regex.Match(doc.DocumentNode.InnerHtml, @"\d{2,4}-\d{2}-\d{2}").Value;
+                            if(string.IsNullOrEmpty(p.CDate))
+                                p.CDate = Regex.Match(doc.DocumentNode.InnerHtml, @"\d{2,4}/\d{2}/\d{2}").Value;
                             p.Content = firstpage[0].InnerHtml;
                             p.Is_Down = true;
                             p.Save();
