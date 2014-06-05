@@ -55,9 +55,10 @@ namespace Leo2.Helper
 
                         if (firstpage != null && firstpage.Count >= 1)
                         {
-                            p.CDate = Regex.Match(doc.DocumentNode.InnerHtml, @"\d{2,4}-\d{2}-\d{2}").Value;
-                            if(string.IsNullOrEmpty(p.CDate))
-                                p.CDate = Regex.Match(doc.DocumentNode.InnerHtml, @"\d{2,4}/\d{2}/\d{2}").Value;
+                            p.CDate = GetDataFromContent(doc.DocumentNode.InnerHtml);
+                            //p.CDate = Regex.Match(doc.DocumentNode.InnerHtml, @"\d{2,4}-\d{2}-\d{2}").Value;
+                            //if(string.IsNullOrEmpty(p.CDate))
+                            //    p.CDate = Regex.Match(doc.DocumentNode.InnerHtml, @"\d{2,4}/\d{2}/\d{2}").Value;
                             p.Content = firstpage[0].InnerHtml;
                             p.Is_Down = true;
                             p.Save();
@@ -65,6 +66,23 @@ namespace Leo2.Helper
                     }
                 }
             }
+        }
+
+
+        /// <summary>
+        /// 根据网页的内容取得当前的日期
+        /// </summary>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        private static string GetDataFromContent(string content)
+        {
+            string cdate = "";
+            cdate = Regex.Match(content, @"\d{2,4}-\d{2}-\d{2}").Value;
+            if(string.IsNullOrEmpty(cdate))
+                cdate = Regex.Match(content, @"\d{2,4}/\d{2}/\d{2}").Value;
+            if(string.IsNullOrEmpty(cdate))
+                cdate = Regex.Match(content, @"\d{2,4}年\d{2}月\d{2}日").Value;
+            return cdate;
         }
 
         public static void GetSingleContentWithSave(int page_oid)

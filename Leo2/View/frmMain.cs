@@ -52,16 +52,26 @@ namespace Leo2.View
 
         private void treeList1_Click(object sender, EventArgs e)
         {
+            ShowPageList();
+        }
+
+
+        /// <summary>
+        /// 显示树结点对应的所有的网页列表
+        /// </summary>
+        private void ShowPageList()
+        {
             if (treeList1.FocusedNode != null && (bool)treeList1.FocusedNode[treeIsSearch] == true)
             {
                 int oid = int.Parse(treeList1.FocusedNode[treeOid].ToString());
-                if (oid != m_current_oid)
+                if (oid != m_current_oid || gridView1.RowCount <= 0)
                 {
                     m_pages = m_controller.GetSubPages(oid);
                     gridControl1.DataSource = m_pages;
                     m_current_oid = oid;
                 }
             }
+            ShowPageContent();
         }
 
         /// <summary>
@@ -70,6 +80,15 @@ namespace Leo2.View
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void gridControl1_Click(object sender, EventArgs e)
+        {
+            ShowPageContent();
+        }
+
+
+        /// <summary>
+        /// 显示网页的内容
+        /// </summary>
+        private void ShowPageContent()
         {
             if (gridView1.FocusedRowHandle < 0)
                 return;
@@ -120,7 +139,7 @@ namespace Leo2.View
         {
             TreeListNode node = treeList1.Nodes[0]; // 先取得根结点
             UpdateAll(node);
-            MessageBox.Show("更新完成");
+            MessageBox.Show("更新完成！", "注意");
         }
 
 
@@ -129,17 +148,22 @@ namespace Leo2.View
             //SplashScreenManager.CloseForm();
             //SplashScreenManager.ShowForm(typeof(frmWelcome), true, true);
             if (treeList1.FocusedNode == null)
+            {
+                MessageBox.Show("请选择子结点后再更新！", "注意");
                 return;
-
+            }
+            this.Cursor = Cursors.WaitCursor;
             m_controller.DownloadPageFromURL(int.Parse(treeList1.FocusedNode[treeOid].ToString()));
-            MessageBox.Show("更新完成");
+            ShowPageList();
+            MessageBox.Show("更新完成！", "注意");
+            this.Cursor = Cursors.Arrow;
         }
 
         private void btnForceUpdateAll_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
             TreeListNode node = treeList1.Nodes[0]; // 先取得根结点
             UpdateAll(node, update_all:true);
-            MessageBox.Show("更新完成");
+            MessageBox.Show("更新完成！", "注意");
         }
 
         private void btnForceUpdate_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
@@ -148,7 +172,7 @@ namespace Leo2.View
                 return;
 
             m_controller.DownloadPageFromURL(int.Parse(treeList1.FocusedNode[treeOid].ToString()), update_all:true);
-            MessageBox.Show("更新完成");
+            MessageBox.Show("更新完成！", "注意");
         }
 
 

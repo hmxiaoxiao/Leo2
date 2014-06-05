@@ -32,7 +32,7 @@ namespace Leo2.Helper
                 return (HtmlDocument)m_pagecache[url];
 
             HtmlWeb webpage = new HtmlWeb();
-            if(!string.IsNullOrEmpty(web.Encoding))
+            if (!string.IsNullOrEmpty(web.Encoding))
                 webpage.OverrideEncoding = Encoding.GetEncoding(web.Encoding);
             HtmlDocument doc = webpage.Load(url);   // 设置要读取的网页地址
             m_pagecache.Add(url, doc);
@@ -123,7 +123,7 @@ namespace Leo2.Helper
                         string url = node.Attributes["href"].Value;
                         if (url.Substring(0, 1) == "/")
                             url = WEB_ROOT + url;
-                        if(url.Substring(0,2) == "..")
+                        if (url.Substring(0, 2) == "..")
                         {
                             url = "http://" + u.Authority;
                             for (int i = 0; i < u.Segments.Count() - 1; i++)
@@ -173,16 +173,18 @@ namespace Leo2.Helper
         public static void CustomerScan(Web web, string list_page_url)
         {
             Uri u = new Uri(list_page_url);
+            HtmlDocument doc;
+            HtmlNodeCollection lists;
             switch (web.Next_URL_XPath)
             {
                 case "customer1":
-                    HtmlDocument doc = GetHtmlDocument(web, list_page_url);
-                    HtmlNodeCollection lists = doc.DocumentNode.SelectNodes("//div[@style='display:none']/a");
+                    doc = GetHtmlDocument(web, list_page_url);
+                    lists = doc.DocumentNode.SelectNodes("//div[@style='display:none']/a");
                     foreach (HtmlNode node in lists)
                     {
                         // 生成所有的列表联接
                         string url = "http://" + u.Authority;
-                        for (int i = 0; i < u.Segments.Count()-1; i++)
+                        for (int i = 0; i < u.Segments.Count() - 1; i++)
                         {
                             url += u.Segments[i];
                         }
@@ -192,6 +194,7 @@ namespace Leo2.Helper
                         GetAndSavePagesOnListPage(web, url);
                     }
                     break;
+
             }
         }
 
@@ -203,19 +206,55 @@ namespace Leo2.Helper
         /// <returns>下一页的地址</returns>
         public static string GetNextLinkOnList(Web web, string list_page_url)
         {
+            HtmlDocument doc;
+            HtmlNodeCollection lists;
 
             if (web.Next_URL_XPath.IndexOf("customer") >= 0)
             {
-                CustomerScan(web, list_page_url);
-                return "";
+                Uri u = new Uri(list_page_url);
+                switch (web.Next_URL_XPath)
+                {
+                    case "customer1":
+                        CustomerScan(web, list_page_url);
+                        return "";
+                    case "customer:www.xd.com.cn":
+                        #region 中国西电集团
+                        doc = GetHtmlDocument(web, list_page_url);
+                        lists = doc.DocumentNode.SelectNodes(".//a[text()='下一页']");
+                        if (lists != null)
+                        {
+                            string tmpUrl = lists[0].Attributes["href"].Value;
+                            if (tmpUrl != null && tmpUrl != "#")        // 如果没有href属性的话，就跳过
+                            {
+                                //找到页数，再合成一个URL
+                                int pos1 = tmpUrl.IndexOf(",");
+                                if (pos1 > -1)
+                                {
+                                    int pos2 = tmpUrl.IndexOf(")");
+                                    if (pos2 > -1)
+                                    {
+                                        string tmp = tmpUrl.Substring(pos1 + 1, pos2 - pos1 - 1).Replace("'", "");
+                                        //合并生成新URL
+                                        pos1 = web.URL.LastIndexOf(".");
+                                        // 生成所有的列表联接
+                                        string url = web.URL.Substring(0, pos1) + "_" + tmp + web.URL.Substring(pos1, web.URL.Length - pos1);
+                                        // 下载页面
+                                        return url;
+                                    }
+                                }
+                            }
+                        }
+                        return "";
+
+                        #endregion
+                }
             }
 
 
             string next_url = "";
 
             string[] next_title = new string[] { "下一页", "下页" };
-            HtmlDocument doc = GetHtmlDocument(web, list_page_url);
-            HtmlNodeCollection lists;
+            doc = GetHtmlDocument(web, list_page_url);
             if (string.IsNullOrEmpty(web.Next_URL_XPath))       // 如果有指定的下一页的方法，就按指定的方法取
             {
                 lists = doc.DocumentNode.SelectNodes("//a");
@@ -225,7 +264,7 @@ namespace Leo2.Helper
                     {
                         foreach (string title in next_title)
                         {
-                            if (node.InnerText == title)
+                            if (node.InnerText.IndexOf(title) != -1)
                             {
                                 if (node.Attributes["href"] != null)        // 如果没有href属性的话，就跳过
                                     next_url = GeneNextLinkURL(web, list_page_url, node.Attributes["href"].Value);
@@ -265,6 +304,7 @@ namespace Leo2.Helper
 
             if (next_url.Substring(0, 1) == "/")
                 next_url = web_root + next_url;
+            real_next_url = next_url;
             if (next_url.IndexOf("/") < 0)
             {
                 real_next_url = web_root;
@@ -272,8 +312,8 @@ namespace Leo2.Helper
                 {
                     real_next_url += u.Segments[i];
                 }
-                if (u.Segments[u.Segments.Count()-1].IndexOf("/") >= 0)
-                    real_next_url += u.Segments[u.Segments.Count()-1];
+                if (u.Segments[u.Segments.Count() - 1].IndexOf("/") >= 0)
+                    real_next_url += u.Segments[u.Segments.Count() - 1];
                 real_next_url += next_url;
             }
 

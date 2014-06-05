@@ -21,14 +21,6 @@ namespace Leo2.Controller
             set { m_view = value; }
         }
 
-        /// <summary>
-        /// 构造函数，判断一下，WEB表里是否有一条根记录，没有的话就要增加
-        /// </summary>
-        public LeoController()
-        {
-            Web.InitWebData();
-            Web.AddData();
-        }
 
         /// <summary>
         /// 取得所有的网站的数据
@@ -107,6 +99,16 @@ Update Web set unread = (select count(*)
             return Page.GetSubPages(oid);
         }
 
+
+        /// <summary>
+        /// 构造函数，判断一下，WEB表里是否有一条根记录，没有的话就要增加
+        /// </summary>
+        public LeoController()
+        {
+            Web.InitWebData();
+            //Web.AddData();
+        }
+
         public void RunTest()
         {
             RunTestLink();
@@ -120,24 +122,24 @@ Update Web set unread = (select count(*)
         //测试联接
         public void RunTestLink()
         {
-            //XPQuery<Web> webQuery = new XPQuery<Web>(XpoDefault.Session);
+            XPQuery<Web> webQuery = new XPQuery<Web>(XpoDefault.Session);
 
-            //// 测试国资委
-            //var webs = from w in webQuery
-            //           where w.Name == "集团新闻"
-            //           select w;
+            // 测试国资委
+            var webs = from w in webQuery
+                       where w.Name == "中国文化产业发展集团公司"
+                       select w;
 
-            //ListHelper.PageList.Clear();
-            //foreach (Web web in webs)
-            //{
-            //    ListHelper.GetAndSavePagesOnList(web, web.URL);
-            //}
+            ListHelper.PageList.Clear();
+            foreach (Web web in webs)
+            {
+                ListHelper.GetAndSavePagesOnList(web, web.URL);
+            }
         }
 
         // 测试页面
         public void RunTestPage()
         {
-            PageHelper.GetSingleContentWithSave(24483);
+            PageHelper.GetSingleContentWithSave(29587);
         }
     }
 }
