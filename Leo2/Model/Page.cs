@@ -151,7 +151,7 @@ a:visited {text-decoration: none}
         /// 网页所在的URL
         /// </summary>
         [Size(255)]
-        [Indexed(Unique=true)]
+        [Indexed(Unique=false)]
         public string URL
         {
             get { return m_url; }

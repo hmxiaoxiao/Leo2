@@ -24,8 +24,8 @@ namespace Leo2
 
 
             Web myweb = new Web();
-            myweb.URL = "http://www.sasac.gov.cn/n1180/n20240/n20259/index.html";
-            m_sasac = new www_sasac_gov_cn(myweb);
+            myweb.URL = "http://www.spacechina.com/n25/n144/n206/n214/index.html";
+            m_sasac = new www_spacechina_com(myweb);
             int i = m_sasac.MaxPage;
             Console.WriteLine(@"总共有{0}页", i);
 
@@ -38,7 +38,7 @@ namespace Leo2
         }
 
         private static int m_count = 0;
-        private static www_sasac_gov_cn m_sasac;
+        private static www_spacechina_com m_sasac;
 
         public static void ShowMessage(object sender, BaseWeb.DownPageEventArgs e)
         {

@@ -8,6 +8,7 @@ using Leo2.Model;
 using System.Text.RegularExpressions;
 using System.IO;
 using DevExpress.Xpo;
+using DevExpress.Data.Filtering;
 
 namespace Leo2.Helper
 {
@@ -85,6 +86,11 @@ namespace Leo2.Helper
         public BaseWeb(Web web)
         {
             m_web = web;
+            int itemp = MaxPage;        // 计算一下页面总数
+            this.ExistPages = new XPCollection<Page>(XpoDefault.Session,
+                    CriteriaOperator.Parse("Parent_ID = ?", web.Oid));
+
+            this.DownPage += SavePage;      // 开始下载时，自动保存
         }
 
 
@@ -205,7 +211,7 @@ namespace Leo2.Helper
         /// </summary>
         /// <param name="list_url">当前的列表页面地址</param>
         /// <returns>下一页的URL</returns>
-        public string GetNextLink(string list_url)
+        protected virtual string GetNextLink(string list_url)
         {
             string[] next_title = new string[] { "下一页", "下页" };     
 
@@ -241,29 +247,29 @@ namespace Leo2.Helper
             string real_next_url = "";
 
             if (next_url.Substring(0, 1) == "/")        // 如果地址是以"/"开头，说明用的是相对地址，要加上网址
-                next_url = web_root + next_url;
+                return web_root + next_url;
+
+            if (next_url.Substring(0, 2) == "..")       // 如果是以。。开发的，要把最后的网页文件去掉，再加路径
+            {
+                real_next_url = "http://" + u.Authority;
+                for (int i = 0; i < u.Segments.Count() - 1; i++)
+                    real_next_url += u.Segments[i];
+                return real_next_url + next_url;
+            }
 
 
             // 这是一种特殊情况，暂时忘了是怎么弄的了。
-            real_next_url = next_url;
-            if (next_url.IndexOf("/") < 0)
-            {
-                real_next_url = web_root;
-                for (int i = 0; i < u.Segments.Count() - 1; i++)
-                {
-                    real_next_url += u.Segments[i];
-                }
-                if (u.Segments[u.Segments.Count() - 1].IndexOf("/") >= 0)
-                    real_next_url += u.Segments[u.Segments.Count() - 1];
-                real_next_url += next_url;
-            }
-
-            //if (url.Substring(0, 2) == "..")
+            //real_next_url = next_url;
+            //if (next_url.IndexOf("/") < 0)
             //{
-            //    url = "http://" + u.Authority;
+            //    real_next_url = web_root;
             //    for (int i = 0; i < u.Segments.Count() - 1; i++)
-            //        url += u.Segments[i];
-            //    url += node.Attributes["href"].Value;
+            //    {
+            //        real_next_url += u.Segments[i];
+            //    }
+            //    if (u.Segments[u.Segments.Count() - 1].IndexOf("/") >= 0)
+            //        real_next_url += u.Segments[u.Segments.Count() - 1];
+            //    real_next_url += next_url;
             //}
 
             return real_next_url;
@@ -384,5 +390,27 @@ namespace Leo2.Helper
         }
 
 
+
+        // 保存页面到数据库里面
+        protected void SavePage(object sender, BaseWeb.DownPageEventArgs e)
+        {
+            using (UnitOfWork uow = new UnitOfWork())
+            {
+                foreach (Page page in e.m_pages)
+                {
+                    var fp = from p in ExistPages
+                             where p.URL == page.URL
+                             select p;
+                    if (fp.Count() == 0)
+                    {
+                        Page newPage = new Page(uow) { Parent_ID = m_web.Oid, Title = page.Title, URL = page.URL };
+                        newPage.Save();
+
+                        //ExistPages.Add(newPage);        //  加入已经找到的页面
+                    }
+                }
+                uow.CommitChanges();
+            }
+        }
     }
 }

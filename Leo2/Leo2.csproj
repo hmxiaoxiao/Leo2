@@ -104,7 +104,10 @@
     <Compile Include="Helper\ListHelper.cs" />
     <Compile Include="Helper\PageHelper.cs" />
     <Compile Include="Helper\WebHelper.cs" />
+    <Compile Include="Helper\www_cnecc_com.cs" />
+    <Compile Include="Helper\www_cnnc_com_cn.cs" />
     <Compile Include="Helper\www_sasac_gov_cn.cs" />
+    <Compile Include="Helper\www_spacechina_com.cs" />
     <Compile Include="Model\Page.cs" />
     <Compile Include="Model\Web.cs" />
     <Compile Include="View\frmMain.cs">
