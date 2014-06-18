@@ -19,6 +19,8 @@ namespace Leo2.Helper
         // 网页的缓存，如果有地址已经读取过，则会在这里保存，不用再读网页了。   
         private static Hashtable m_pagecache = new Hashtable();
 
+        private static int RETRY = 5;
+
         /// <summary>
         /// 从指定的网址上读取网页的html
         /// 这里采用了cache,之前读过的网页不会重复读
@@ -31,12 +33,32 @@ namespace Leo2.Helper
             if (m_pagecache.ContainsKey(url))
                 return (HtmlDocument)m_pagecache[url];
 
+            // 没有读取过数据的话就直接取出
             HtmlWeb webpage = new HtmlWeb();
+            HtmlDocument doc = new HtmlDocument();
             if (!string.IsNullOrEmpty(web.Encoding))
                 webpage.OverrideEncoding = Encoding.GetEncoding(web.Encoding);
-            HtmlDocument doc = webpage.Load(url);   // 设置要读取的网页地址
+
+            // 读取网页内容重复五次，五次不成功，就返回空
+            for (int i = 0; i < RETRY; i++)
+            {
+                try
+                {
+                    doc = webpage.Load(url);   // 设置要读取的网页地址
+                }
+                catch
+                {
+                    if (i == RETRY - 1)
+                        break;
+                    else
+                        return null;
+                }
+            }
+
+            // 将读取到的内容保存到列表里面
             m_pagecache.Add(url, doc);
 
+            // 返回读取的内容
             return doc;
         }
 
@@ -96,76 +118,80 @@ namespace Leo2.Helper
         /// <returns>有已经存在的，返回真，否则返回假</returns>
         public static bool GetAndSavePagesOnListPage(Web web, string list_url)
         {
-            // 先取得网站的前缀，有些联接是不加域名的。
-            Uri u = new Uri(web.URL);
-            string WEB_ROOT = "http://" + u.Authority;
-
             // 是否有已经存在的页面
             bool find_exist_url = false;
-
-            // 取得列表面的内容
-            HtmlDocument doc = GetHtmlDocument(web, list_url);
-            HtmlNodeCollection lists = doc.DocumentNode.SelectNodes(web.List_URL_XPath);
-
-            // 如果没有内容的话，直接返回
-            if (lists != null)
+            try
             {
-                // 判断时间
-#if DEBUG
-                DateTime dt_now = DateTime.Now;
-#endif
-                using (UnitOfWork uow = new UnitOfWork())
+                // 先取得网站的前缀，有些联接是不加域名的。
+                Uri u = new Uri(web.URL);
+                string WEB_ROOT = "http://" + u.Authority;
+
+
+                // 取得列表面的内容
+                HtmlDocument doc = GetHtmlDocument(web, list_url);
+                HtmlNodeCollection lists = doc.DocumentNode.SelectNodes(web.List_URL_XPath);
+
+                // 如果没有内容的话，直接返回
+                if (lists != null)
                 {
-                    // 取所有的列表
-                    foreach (HtmlNode node in lists)
+                    // 判断时间
+#if DEBUG
+                    DateTime dt_now = DateTime.Now;
+#endif
+                    using (UnitOfWork uow = new UnitOfWork())
                     {
-                        // 取得联接，如果需要补全地址！
-                        string url = node.Attributes["href"].Value;
-                        if (url.Substring(0, 1) == "/")
-                            url = WEB_ROOT + url;
-                        if (url.Substring(0, 2) == "..")
+                        // 取所有的列表
+                        foreach (HtmlNode node in lists)
                         {
-                            url = "http://" + u.Authority;
-                            for (int i = 0; i < u.Segments.Count() - 1; i++)
-                                url += u.Segments[i];
-                            url += node.Attributes["href"].Value;
-                        }
+                            // 取得联接，如果需要补全地址！
+                            string url = node.Attributes["href"].Value;
+                            if (url.Substring(0, 1) == "/")
+                                url = WEB_ROOT + url;
+                            if (url.Substring(0, 2) == "..")
+                            {
+                                url = "http://" + u.Authority;
+                                for (int i = 0; i < u.Segments.Count() - 1; i++)
+                                    url += u.Segments[i];
+                                url += node.Attributes["href"].Value;
+                            }
 
-                        // 判断是否重复，如没有重复，就保存到页面上去
-                        XPQuery<Page> pageQuery = new XPQuery<Page>(XpoDefault.Session);
-                        var pages = from page in pageQuery
-                                    where page.URL == url
-                                    select page;
-                        if (pages.Count() == 0)
-                        {
-                            string title;       // 网页的标题 
-                            if (node.Attributes["title"] != null)
-                                title = node.Attributes["title"].Value;
+                            // 判断是否重复，如没有重复，就保存到页面上去
+                            XPQuery<Page> pageQuery = new XPQuery<Page>(XpoDefault.Session);
+                            var pages = from page in pageQuery
+                                        where page.URL == url
+                                        select page;
+                            if (pages.Count() == 0)
+                            {
+                                string title;       // 网页的标题 
+                                if (node.Attributes["title"] != null)
+                                    title = node.Attributes["title"].Value;
+                                else
+                                    title = node.InnerText;
+
+                                Page page = new Page(uow);
+                                page.Parent_ID = web.Oid;
+                                page.URL = url;
+                                page.Title = title;
+
+                                PageList.Add(page);      // 加入查到的页面结点
+#if DEBUG
+                                Console.WriteLine(page.Title);
+#endif
+                            }
                             else
-                                title = node.InnerText;
-
-                            Page page = new Page(uow);
-                            page.Parent_ID = web.Oid;
-                            page.URL = url;
-                            page.Title = title;
-
-                            PageList.Add(page);      // 加入查到的页面结点
+                            {
+                                find_exist_url = true;
+                            }
+                        }
+                        uow.CommitChanges();        //  保存所有的数据
 #if DEBUG
-                            Console.WriteLine(page.Title);
+                        TimeSpan sp = new TimeSpan(DateTime.Now.Ticks - dt_now.Ticks);
+                        Console.WriteLine("总共时间为（毫秒）：" + sp.TotalMilliseconds.ToString());
 #endif
-                        }
-                        else
-                        {
-                            find_exist_url = true;
-                        }
                     }
-                    uow.CommitChanges();        //  保存所有的数据
-#if DEBUG
-                    TimeSpan sp = new TimeSpan(DateTime.Now.Ticks - dt_now.Ticks);
-                    Console.WriteLine("总共时间为（毫秒）：" + sp.TotalMilliseconds.ToString());
-#endif
                 }
             }
+            catch { }
             return find_exist_url;
         }
 

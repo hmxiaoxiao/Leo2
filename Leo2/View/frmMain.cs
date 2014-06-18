@@ -15,6 +15,8 @@ using Leo2.Model;
 using DevExpress.XtraTreeList.Nodes;
 using Leo2.Helper;
 using DevExpress.XtraSplashScreen;
+using DevExpress.XtraEditors.Controls;
+
 
 namespace Leo2.View
 {
@@ -46,7 +48,7 @@ namespace Leo2.View
             treeList1.KeyFieldName = "Oid";
             treeList1.ParentFieldName = "Parent_ID";
             treeList1.DataSource = webs;
-            treeList1.ExpandAll();
+            //treeList1.ExpandAll();
         }
 
 
@@ -101,13 +103,11 @@ namespace Leo2.View
                 ChangeWebUnReadCount();                 // 更新数量
             }
 
-            foreach (Page page in m_pages)
+            Page page = m_pages.FirstOrDefault(p => p.Oid == oid);
+            if (page != null)
             {
-                if (page.Oid == oid)
-                {
-                    page.Is_Read = true;
-                    webBrowser1.DocumentText = page.DisplayContent();
-                }
+                page.Is_Read = true;
+                webBrowser1.DocumentText = page.DisplayContent();
             }
             gridView1.RefreshData();
         }
@@ -137,33 +137,48 @@ namespace Leo2.View
 
         private void btnUpdateAll_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            TreeListNode node = treeList1.Nodes[0]; // 先取得根结点
+            //获得当前选中的结点
+
+            //TreeListNode node = treeList1.Nodes[0]; // 先取得根结点
+            this.Cursor = Cursors.WaitCursor;
+            TreeListNode node = treeList1.FocusedNode;
             UpdateAll(node);
+            this.Cursor = Cursors.Arrow;
             MessageBox.Show("更新完成！", "注意");
         }
 
 
         private void btnUpdate_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            //SplashScreenManager.CloseForm();
-            //SplashScreenManager.ShowForm(typeof(frmWelcome), true, true);
             if (treeList1.FocusedNode == null)
             {
                 MessageBox.Show("请选择子结点后再更新！", "注意");
                 return;
             }
             this.Cursor = Cursors.WaitCursor;
-            m_controller.DownloadPageFromURL(int.Parse(treeList1.FocusedNode[treeOid].ToString()));
+            m_controller.DownloadPageFromURL(int.Parse(treeList1.FocusedNode[treeOid].ToString()), true);
             ShowPageList();
-            MessageBox.Show("更新完成！", "注意");
             this.Cursor = Cursors.Arrow;
+            MessageBox.Show("更新完成！", "注意");
         }
 
         private void btnForceUpdateAll_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            TreeListNode node = treeList1.Nodes[0]; // 先取得根结点
-            UpdateAll(node, update_all:true);
-            MessageBox.Show("更新完成！", "注意");
+            //TreeListNode node = treeList1.Nodes[0]; // 先取得根结点
+            //UpdateAll(node, update_all:true);
+            //MessageBox.Show("更新完成！", "注意");
+
+            
+            //(ProgressBarControl)(barEditItem1.Edit).PerformStep();
+            //stbProgressBar.GetDisplayText(this);
+            //int max = 		((DevExpress.XtraEditors.Repository.RepositoryItemProgressBar)(barEditItem1.Edit)).Maximum;
+            //MessageBox.Show(max.ToString());
+            //((DevExpress.XtraEditors.Repository.RepositoryItemProgressBar)(barEditItem1.Edit)).PerformStep();
+        }
+
+        private void SetProcess(int i)
+        {
+
         }
 
         private void btnForceUpdate_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)

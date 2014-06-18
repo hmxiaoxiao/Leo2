@@ -5,6 +5,7 @@ using System.Text;
 
 using DevExpress.Xpo;
 using DevExpress.Data.Filtering;
+using Leo2.Helper;
 
 namespace Leo2.Model
 {
@@ -184,6 +185,7 @@ a:visited {text-decoration: none}
         /// <returns></returns>
         public string DisplayContent()
         {
+            m_content = PageHelper.GetContentFromFile(this);
             string temp = string.Format(m_template, m_title, m_content, m_css);
             return temp;
         }

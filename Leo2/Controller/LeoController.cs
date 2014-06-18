@@ -7,6 +7,7 @@ using Leo2.Model;
 using Leo2.View;
 using Leo2.Helper;
 using DevExpress.Xpo;
+using DevExpress.Data.Filtering;
 
 namespace Leo2.Controller
 {
@@ -39,16 +40,17 @@ namespace Leo2.Controller
         /// <returns></returns>
         public List<Page> DownloadPageFromURL(int web_oid, bool update_all = false)
         {
-            m_webs = new XPCollection<Web>();
-            foreach (Web web in m_webs)
+            var webs = from w in Session.DefaultSession.Query<Web>()
+                       where w.Oid == web_oid
+                       select w;
+            foreach (Web web in webs)
             {
-                if (web.Oid == web_oid)
-                {
-                    ListHelper.GetAndSavePagesOnList(web, web.URL, update_all);
-                    SetUnreadCount(web, ListHelper.PageList.Count);
-                    PageHelper.GetAllContentWithSave();
-                    return ListHelper.PageList;
-                }
+                ListHelper.PageList = new List<Page>();
+                ListHelper.GetAndSavePagesOnList(web, web.URL, update_all);
+                SetUnreadCount(web, ListHelper.PageList.Count);
+                //PageHelper.GetAllContentWithSave();
+                return ListHelper.PageList;
+
             }
 
             return new List<Page>();
@@ -75,17 +77,33 @@ namespace Leo2.Controller
             XpoDefault.Session.BeginTransaction();
 
             // 先更新网页的已读标志
-            string sql = "Update Page set is_read = 1 where oid = " + oid.ToString();
-            XpoDefault.Session.ExecuteNonQuery(sql);
+            XPQuery<Page> all_pages = Session.DefaultSession.Query<Page>();
+            XPQuery<Web> all_webs = Session.DefaultSession.Query<Web>();
 
-            // 再更新网站的未读数量
-            sql = @"
-Update Web set unread = (select count(*) 
-                         from page where parent_id = (select parent_id from page where oid = {0})
-                                         and is_read = 0 )
-           where oid = (select parent_id from page where oid = {0} )";
-            sql = string.Format(sql, oid);
-            XpoDefault.Session.ExecuteNonQuery(sql);
+            var pages = from p in all_pages
+                               where p.Oid == oid
+                               select p;
+            if(pages.Count() == 1)
+            {
+                Page current_page = pages.First<Page>();
+                current_page.Is_Read = true;
+                current_page.Save();
+
+                var webs = from w in all_webs
+                           where w.Oid == current_page.Parent_ID
+                           select w;
+                if (webs.Count() == 1)
+                {
+                    var unread_pages = from p in all_pages
+                                        where p.Parent_ID == current_page.Parent_ID && p.Is_Read == false
+                                        select p;
+                    Web current_web = webs.First();
+                    current_web.Unread = unread_pages.Count();
+                    current_web.Save();
+
+                }
+            }
+
             XpoDefault.Session.CommitTransaction();
         }
 

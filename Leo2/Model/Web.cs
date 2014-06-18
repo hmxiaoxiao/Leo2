@@ -29,10 +29,22 @@ namespace Leo2.Model
         private string m_page_xpath;
         private int m_unread;
         private string m_encoding;
+        private bool m_search_over;
+
 
         public string Title
         {
             get { return m_unread > 0 ? m_name + "(" + m_unread.ToString() + ")" : m_name; }
+        }
+
+
+        /// <summary>
+        /// 列表是已经全部搜索完，是为全部搜索完成，否为未全部搜索完成
+        /// </summary>
+        public bool Search_Over
+        {
+            get { return m_search_over; }
+            set { SetPropertyValue<bool>("Search_Over", ref m_search_over, value); }
         }
 
         /// <summary>
