@@ -35,17 +35,11 @@ namespace Leo2
 
 
             // 显示主窗口
-            ////SplashScreenManager.ShowForm(typeof(frmWelcome), true, true);
-            //LeoController mainController = new LeoController();
-            ////mainController.RunTest();
-            //mainController.View = new frmMain(mainController);
-            //Application.Run(mainController.View);
-
-            www_sasac_gov_cn sasac = new www_sasac_gov_cn("http://www.sasac.gov.cn/n1180/n20240/n20259/index.html");
-            int i = sasac.MaxPage;
-
-            Console.ReadKey();
-            
+            //SplashScreenManager.ShowForm(typeof(frmWelcome), true, true);
+            LeoController mainController = new LeoController();
+            mainController.View = new frmMain(mainController);
+            Application.Run(mainController.View);
+           
         }
     }
 }

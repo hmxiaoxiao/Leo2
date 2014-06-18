@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 
 using Leo2.Helper;
+using Leo2.Model;
+using DevExpress.Xpo.DB;
+using DevExpress.Xpo;
 
 namespace Leo2
 {
@@ -15,7 +18,14 @@ namespace Leo2
         [STAThread]
         static void Main()
         {
-            m_sasac = new www_sasac_gov_cn("http://www.sasac.gov.cn/n1180/n20240/n20259/index.html");
+            // 设置当前的数据库联接
+            string ConnectionString = AccessConnectionProvider.GetConnectionString("Web.mdb"); //SQLiteConnectionProvider.GetConnectionString("Web.DB");
+            XpoDefault.DataLayer = XpoDefault.GetDataLayer(ConnectionString, AutoCreateOption.DatabaseAndSchema);
+
+
+            Web myweb = new Web();
+            myweb.URL = "http://www.sasac.gov.cn/n1180/n20240/n20259/index.html";
+            m_sasac = new www_sasac_gov_cn(myweb);
             int i = m_sasac.MaxPage;
             Console.WriteLine(@"总共有{0}页", i);
 

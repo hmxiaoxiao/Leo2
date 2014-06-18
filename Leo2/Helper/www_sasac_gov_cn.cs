@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Leo2.Model;
 using HtmlAgilityPack;
+using DevExpress.Xpo;
+using DevExpress.Data.Filtering;
 
 namespace Leo2.Helper
 {
@@ -11,23 +14,27 @@ namespace Leo2.Helper
     {
         private static readonly string list_xpath = "//td[@class='black14']/a";
         private static readonly string page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
-        private int m_max_page = -1;
+
 
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="url">列表的起始页</param>
-        public www_sasac_gov_cn(string url)
-            : base(url)
+        public www_sasac_gov_cn(Web web)
+            : base(web)
         {
+            // 设置取数规则
             base.List_XPath = list_xpath;
             base.Page_Xpath = page_xpath;
+
+            this.DownPage += SavePage;      // 开始下载时，自动保存
+            this.ExistPages = new XPCollection<Page>(XpoDefault.Session,
+                CriteriaOperator.Parse("Parent_ID = ?", web.Oid));
         }
 
 
-
-
+        /// 取得国资委列表的页数
         /// <summary>
         /// 取得国资委列表的页数
         /// 总页数为下一页的联接数上+1
@@ -38,7 +45,7 @@ namespace Leo2.Helper
         protected override int GetPagesCount()
         {
             // 先读取内容 
-            HtmlDocument doc = WebHelper.GetHtmlDocument(m_url);
+            HtmlDocument doc = WebHelper.GetHtmlDocument(m_web.URL);
 
             string next_url = "";
             HtmlNodeCollection lists = doc.DocumentNode.SelectNodes("//a");
@@ -55,13 +62,7 @@ namespace Leo2.Helper
                 }
             }
 
-            if (string.IsNullOrEmpty(next_url))
-            {
-                Console.WriteLine("国资委没有取得下一页内容");
-                return 0;
-            }
-
-            Uri u = new Uri(m_url);
+            Uri u = new Uri(this.m_web.URL);
             string web_root = "http://" + u.Authority;
             next_url = web_root + next_url;
 
@@ -71,6 +72,29 @@ namespace Leo2.Helper
                                   temp.IndexOf('.') - temp.IndexOf('_') -1);
 
             return int.Parse(temp) + 1;
+        }
+
+
+        // 保存页面到数据库里面
+        protected void SavePage(object sender, BaseWeb.DownPageEventArgs e)
+        {
+            using (UnitOfWork uow = new UnitOfWork())
+            {
+                foreach (Page page in e.m_pages)
+                {
+                    var fp = from p in ExistPages
+                             where p.URL == page.URL
+                             select p;
+                    if (fp.Count() == 0)
+                    {
+                        Page newPage = new Page(uow) { Parent_ID = m_web.Oid, Title = page.Title, URL = page.URL };
+                        newPage.Save();
+
+                        ExistPages.Add(newPage);        //  加入已经找到的页面
+                    }
+                }
+                uow.CommitChanges();
+            }
         }
     }
 }

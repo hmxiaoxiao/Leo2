@@ -7,6 +7,7 @@ using HtmlAgilityPack;
 using Leo2.Model;
 using System.Text.RegularExpressions;
 using System.IO;
+using DevExpress.Xpo;
 
 namespace Leo2.Helper
 {
@@ -39,7 +40,7 @@ namespace Leo2.Helper
 
                 foreach (Delegate del in delArray)
                 {
-                    EventHandler method = (EventHandler)del;
+                    DownPageEventHandler method = (DownPageEventHandler)del;
                     method.BeginInvoke(null, e, null, null);
                 }
             }
@@ -48,10 +49,10 @@ namespace Leo2.Helper
         protected string List_XPath { get; set; }      // 列表取数规则
         protected string Page_Xpath { get; set; }      // 页面取数规则
         public List<Page> Pages { get; set; }       // 当前的页面数
-        public List<Page> ExistPages { get; set; }  // 已经搜索到的页面
+        protected XPCollection<Page> ExistPages { get; set; }  // 已经搜索到的页面
 
         private int m_max_page = -1;        // 记录最大的页数
-        protected string m_url;
+        protected Web m_web;
   
 
         // 取得总共页数
@@ -81,10 +82,9 @@ namespace Leo2.Helper
         /// 构造函数，必须加上起始列表的URL
         /// </summary>
         /// <param name="url"></param>
-        public BaseWeb(string url)
+        public BaseWeb(Web web)
         {
-            m_url = url;
-            Pages = new List<Page>();
+            m_web = web;
         }
 
 
@@ -104,8 +104,9 @@ namespace Leo2.Helper
         /// </returns>
         public bool GetPagesOnList(string url = "", bool search_over = false)
         {
+            // 如果下载的地址为空的话就取WEB的地址（第一次调用不用加的）
             if (string.IsNullOrEmpty(url))
-                url = m_url;
+                url = m_web.URL;
 
             // 下载该列表下的page联接
             GetPagesOnList(url);
@@ -163,11 +164,17 @@ namespace Leo2.Helper
         /// </summary>
         /// <param name="web"></param>
         /// <param name="list_url"></param>
-        /// <returns>有已经存在的，返回真，否则返回假</returns>
-        public void GetPagesOnList(string list_url)
+        /// <returns>正常返回为真，读取网页内容出错，则为假</returns>
+        public bool GetPagesOnList(string list_url)
         {
+            // 清空已经获得的列表
+            Pages = new List<Page>();
+
             // 取得列表面的内容
             HtmlDocument doc = WebHelper.GetHtmlDocument(list_url);
+            if (doc == null)
+                return false;
+
             HtmlNodeCollection lists = doc.DocumentNode.SelectNodes(this.List_XPath);
 
             // 取所有的页面结点
@@ -187,6 +194,7 @@ namespace Leo2.Helper
 
                 Pages.Add(page);      // 加入查到的页面结点
             }
+            return true;
         }
 
 
@@ -228,7 +236,7 @@ namespace Leo2.Helper
         /// <returns></returns>
         protected string GeneRightURL(string next_url)
         {
-            Uri u = new Uri(m_url);
+            Uri u = new Uri(this.m_web.URL);
             string web_root = "http://" + u.Authority;
             string real_next_url = "";
 

@@ -48,10 +48,15 @@ namespace Leo2.Helper
             }
 
             // 将读取到的内容保存到列表里面
-            m_pagecache.Add(url, doc);
-
-            // 返回读取的内容
-            return doc;
+            if (doc != null)
+            {
+                m_pagecache.Add(url, doc);
+                return doc; // 返回读取的内容
+            }
+            else
+            {
+                return new HtmlDocument();
+            }
         }
     }
 }
