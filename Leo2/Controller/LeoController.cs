@@ -74,7 +74,7 @@ namespace Leo2.Controller
         /// <param name="oid"></param>
         public void SetPageHasRead(int oid)
         {
-            XpoDefault.Session.BeginTransaction();
+            XpoDefault.Session.BeginTransaction();      // 开始一个事务
 
             // 先更新网页的已读标志
             XPQuery<Page> all_pages = Session.DefaultSession.Query<Page>();
@@ -83,7 +83,7 @@ namespace Leo2.Controller
             var pages = from p in all_pages
                                where p.Oid == oid
                                select p;
-            if(pages.Count() == 1)
+            if(pages.Count() == 1)       // 先更新page已读
             {
                 Page current_page = pages.First<Page>();
                 current_page.Is_Read = true;
@@ -92,7 +92,7 @@ namespace Leo2.Controller
                 var webs = from w in all_webs
                            where w.Oid == current_page.Parent_ID
                            select w;
-                if (webs.Count() == 1)
+                if (webs.Count() == 1)  // 再更新web的已读数量
                 {
                     var unread_pages = from p in all_pages
                                         where p.Parent_ID == current_page.Parent_ID && p.Is_Read == false
@@ -104,7 +104,7 @@ namespace Leo2.Controller
                 }
             }
 
-            XpoDefault.Session.CommitTransaction();
+            XpoDefault.Session.CommitTransaction();     // 提交事务
         }
 
         /// <summary>
@@ -126,6 +126,12 @@ namespace Leo2.Controller
             Web.InitWebData();
             //Web.AddData();
         }
+
+        public BaseWeb GetRuleFromWeb(Web web)
+        {
+            return new www_sasac_gov_cn(web);
+        }
+
 
         public void RunTest()
         {

@@ -18,7 +18,9 @@ namespace Leo2.Helper
     public class BaseWeb
     {
 
-        // 声明委托和事件
+        #region 声明事件和委托
+
+        #region 开始下载列表页面事件
         public delegate void DownPageEventHandler(object sender, DownPageEventArgs e);
         public event DownPageEventHandler DownPage;
 
@@ -33,7 +35,8 @@ namespace Leo2.Helper
 
 
         // 定义事件，触发时，调用所有关注的事件。
-        protected virtual void OnDownPage(DownPageEventArgs e)
+        // 这里采用异步的联接方式，注意
+        public virtual void OnDownPage(DownPageEventArgs e)
         {
             if (DownPage != null)
             {
@@ -42,10 +45,35 @@ namespace Leo2.Helper
                 foreach (Delegate del in delArray)
                 {
                     DownPageEventHandler method = (DownPageEventHandler)del;
-                    method.BeginInvoke(null, e, null, null);
+                    method.BeginInvoke(this, e, null, null);
                 }
             }
         }
+        #endregion
+
+        #region 列表全部下载完成事件
+        public delegate void DownloadCompleteEventHandle(object sender, DownloadCompleteEventArgs e);
+        public event DownloadCompleteEventHandle DownloadComplete;
+
+        public class DownloadCompleteEventArgs : EventArgs
+        {
+            public Web m_web;
+            public DownloadCompleteEventArgs(Web web)
+            {
+                m_web = web;
+            }
+        }
+
+        public virtual void OnDownloadComplete(DownloadCompleteEventArgs e)
+        {
+            if (DownloadComplete != null)
+            {
+                DownloadComplete(this, e);
+            }
+        }
+        #endregion
+
+        #endregion
 
         protected string List_XPath { get; set; }      // 列表取数规则
         protected string Page_Xpath { get; set; }      // 页面取数规则
@@ -136,7 +164,14 @@ namespace Leo2.Helper
                 {
                     // 没有取得下一页地址
                     if (next_url == "")     // 空 表明全部搜索过了
+                    {
+                        //通知已经全部下载完成了。
+                        DownloadCompleteEventArgs eventComplete = new DownloadCompleteEventArgs(m_web);
+                        OnDownloadComplete(eventComplete);
+
+
                         return true;
+                    }
                     else
                         return false;
                 }
