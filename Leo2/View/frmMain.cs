@@ -19,7 +19,7 @@ using DevExpress.XtraEditors.Controls;
 using System.Diagnostics;
 using DevExpress.Data.Filtering;
 using System.Threading;
-
+using Leo2.Rule;
 
 namespace Leo2.View
 {
@@ -158,7 +158,7 @@ namespace Leo2.View
             BeginWebDownload();
         }
 
-
+        // 开始扫描页面
         private void BeginWebDownload()
         {
             // 如果正在下载，就不下载了。
@@ -187,6 +187,13 @@ namespace Leo2.View
 
             // 取得对应的规则
             m_rule = m_controller.GetRuleFromWeb(current_web);
+
+            // 如果规则没有取到，就提示尚未完成，不再继续
+            if (m_rule == null)
+            {
+                MessageBox.Show("该下载规则还没有完成，暂不能使用!", "注意", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             // 设置进度条的最大值 
             this.repositoryItemProgressBar1.Maximum = m_rule.MaxPage;

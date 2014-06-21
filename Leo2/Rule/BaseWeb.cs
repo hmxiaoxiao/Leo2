@@ -9,8 +9,9 @@ using System.Text.RegularExpressions;
 using System.IO;
 using DevExpress.Xpo;
 using DevExpress.Data.Filtering;
+using Leo2.Helper;
 
-namespace Leo2.Helper
+namespace Leo2.Rule
 {
     /// <summary>
     /// 基本的网页下载基类，完成整个网页的列表，下一页，以及内容的保存

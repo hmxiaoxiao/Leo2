@@ -9,8 +9,9 @@ using DevExpress.Xpo;
 using DevExpress.Data.Filtering;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using Leo2.Helper;
 
-namespace Leo2.Helper
+namespace Leo2.Rule
 {
     public class www_cnecc_com : BaseWeb
     {

@@ -8,7 +8,7 @@ using Leo2.Model;
 using DevExpress.Xpo.DB;
 using DevExpress.Xpo;
 
-namespace Leo2
+namespace Leo2.Rule
 {
     static class ConsoleProgram
     {

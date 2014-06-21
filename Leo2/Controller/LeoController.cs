@@ -8,10 +8,11 @@ using Leo2.View;
 using Leo2.Helper;
 using DevExpress.Xpo;
 using DevExpress.Data.Filtering;
+using Leo2.Rule;
 
 namespace Leo2.Controller
 {
-    public class LeoController
+    public class LeoController : IDisposable
     {
         private XPCollection<Web> m_webs;
 
@@ -22,6 +23,20 @@ namespace Leo2.Controller
             set { m_view = value; }
         }
 
+
+        public void Dispose()
+        {
+            if (m_webs != null)
+            {
+                m_webs.Dispose();
+                m_webs = null;
+            }
+            if (m_view != null)
+            {
+                m_view.Dispose();
+                m_view = null;
+            }
+        }
 
         /// <summary>
         /// 取得所有的网站的数据
@@ -127,19 +142,23 @@ namespace Leo2.Controller
             //Web.AddData();
         }
 
-        // 根据名称建立对应的规则类
+        // 根据名称建立对应的规则类，如果对应的规则类没有撰写就返回NULL
         public BaseWeb GetRuleFromWeb(Web web)
         {
             Uri uri = new Uri(web.URL);
             string classname = "Leo2.Helper." + uri.Authority.Replace('.', '_');
 
             Type type = Type.GetType(classname);
-            object[] parameters = new object[1];
-            parameters[0] = web;
+            if (type == null)        // 如果找不到类型，就返回NULL
+                return null;
+            else
+            {
+                object[] parameters = new object[1];
+                parameters[0] = web;
 
-            object obj = Activator.CreateInstance(type, parameters);
-
-            return (BaseWeb)obj;
+                object obj = Activator.CreateInstance(type, parameters);
+                return (BaseWeb)obj;
+            }
         }
 
 
