@@ -127,9 +127,19 @@ namespace Leo2.Controller
             //Web.AddData();
         }
 
+        // 根据名称建立对应的规则类
         public BaseWeb GetRuleFromWeb(Web web)
         {
-            return new www_sasac_gov_cn(web);
+            Uri uri = new Uri(web.URL);
+            string classname = "Leo2.Helper." + uri.Authority.Replace('.', '_');
+
+            Type type = Type.GetType(classname);
+            object[] parameters = new object[1];
+            parameters[0] = web;
+
+            object obj = Activator.CreateInstance(type, parameters);
+
+            return (BaseWeb)obj;
         }
 
 
