@@ -15,7 +15,7 @@ using Leo2.Helper;
 
 namespace Leo2.Rule
 {
-    public class www_spacechina_com : BaseWeb
+    public class www_spacechina_com : BaseRule
     {
         private static readonly string list_xpath = "//a[@class='hei_x_12_a']";
         private static readonly string page_xpath = "//div[@id='mainart']/table/tr/td/table[2]";

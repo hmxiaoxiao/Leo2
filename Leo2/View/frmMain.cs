@@ -30,7 +30,7 @@ namespace Leo2.View
         private XPCollection<Web> m_webs;
         private XPCollection<Page> m_pages;
 
-        private BaseWeb m_rule;                 // 下载列表页面的规则
+        private BaseRule m_rule;                 // 下载列表页面的规则
         private Thread m_web_thread = null;            // Web下载的线程
 
         // 构造函数，初始化必要的数据
@@ -215,11 +215,11 @@ namespace Leo2.View
         
 
         // 显示下载的进度
-        private void ShowProcess(object sender, BaseWeb.DownPageEventArgs e)
+        private void ShowProcess(object sender, BaseRule.DownPageEventArgs e)
         {
             if (this.InvokeRequired)
             {
-                this.BeginInvoke(new BaseWeb.DownPageEventHandler(ShowProcess), new object[] { null, e });
+                this.BeginInvoke(new BaseRule.DownPageEventHandler(ShowProcess), new object[] { null, e });
             }
             else
             {
@@ -230,11 +230,11 @@ namespace Leo2.View
         }
 
         // 下载完成后的显示处理
-        private void ShowCompleteInfo(object sender, BaseWeb.DownloadCompleteEventArgs e)
+        private void ShowCompleteInfo(object sender, BaseRule.DownloadCompleteEventArgs e)
         {
             if (this.InvokeRequired)
             {
-                this.BeginInvoke(new BaseWeb.DownloadCompleteEventHandle(ShowCompleteInfo), new object[] { null, e });
+                this.BeginInvoke(new BaseRule.DownloadCompleteEventHandle(ShowCompleteInfo), new object[] { null, e });
             }
             else
             {

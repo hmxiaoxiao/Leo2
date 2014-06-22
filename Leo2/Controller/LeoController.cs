@@ -143,7 +143,7 @@ namespace Leo2.Controller
         }
 
         // 根据名称建立对应的规则类，如果对应的规则类没有撰写就返回NULL
-        public BaseWeb GetRuleFromWeb(Web web)
+        public BaseRule GetRuleFromWeb(Web web)
         {
             Uri uri = new Uri(web.URL);
             string classname = "Leo2.Helper." + uri.Authority.Replace('.', '_');
@@ -157,7 +157,7 @@ namespace Leo2.Controller
                 parameters[0] = web;
 
                 object obj = Activator.CreateInstance(type, parameters);
-                return (BaseWeb)obj;
+                return (BaseRule)obj;
             }
         }
 

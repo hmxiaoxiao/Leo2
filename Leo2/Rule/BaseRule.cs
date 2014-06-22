@@ -16,7 +16,7 @@ namespace Leo2.Rule
     /// <summary>
     /// 基本的网页下载基类，完成整个网页的列表，下一页，以及内容的保存
     /// </summary>
-    public class BaseWeb
+    public class BaseRule
     {
 
         #region 声明事件和委托
@@ -112,7 +112,7 @@ namespace Leo2.Rule
         /// 构造函数，必须加上起始列表的URL
         /// </summary>
         /// <param name="url"></param>
-        public BaseWeb(Web web)
+        public BaseRule(Web web)
         {
             m_web = web;
             int itemp = MaxPage;        // 计算一下页面总数
@@ -428,7 +428,7 @@ namespace Leo2.Rule
 
 
         // 保存页面到数据库里面
-        protected void SavePage(object sender, BaseWeb.DownPageEventArgs e)
+        protected void SavePage(object sender, BaseRule.DownPageEventArgs e)
         {
             using (UnitOfWork uow = new UnitOfWork())
             {

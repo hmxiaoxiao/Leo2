@@ -13,7 +13,7 @@ using Leo2.Helper;
 
 namespace Leo2.Rule
 {
-    public class www_cnecc_com : BaseWeb
+    public class www_cnecc_com : BaseRule
     {
         private static readonly string list_xpath = "//div[@class='xwzx-ywzd-item-title']/a";
         private static readonly string page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";

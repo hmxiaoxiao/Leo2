@@ -11,7 +11,7 @@ using Leo2.Helper;
 
 namespace Leo2.Rule
 {
-    public class www_sasac_gov_cn : BaseWeb
+    public class www_sasac_gov_cn : BaseRule
     {
         private static readonly string list_xpath = "//td[@class='black14']/a";
         private static readonly string page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
