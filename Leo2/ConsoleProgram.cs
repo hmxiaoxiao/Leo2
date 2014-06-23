@@ -29,9 +29,9 @@ namespace Leo2.Rule
             int i = m_sasac.MaxPage;
             Console.WriteLine(@"总共有{0}页", i);
 
-            m_sasac.DownPage += ShowMessage;
+            m_sasac.PageScanComplete += ShowMessage;
 
-            m_sasac.GetPagesOnList();
+            m_sasac.SingleSiteScan();
 
             Console.WriteLine("按任意键退出");
             Console.ReadKey();
@@ -40,7 +40,7 @@ namespace Leo2.Rule
         private static int m_count = 0;
         private static www_spacechina_com m_sasac;
 
-        public static void ShowMessage(object sender, BaseRule.DownPageEventArgs e)
+        public static void ShowMessage(object sender, BaseRule.PageScanCompleteEventArgs e)
         {
             m_count ++;
             Console.WriteLine(@"已经下载了{0}页，共{1}页", m_count, m_sasac.MaxPage);

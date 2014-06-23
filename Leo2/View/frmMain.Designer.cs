@@ -58,18 +58,20 @@
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.btnUpdateAll = new DevExpress.XtraBars.BarButtonItem();
             this.btnUpdate = new DevExpress.XtraBars.BarButtonItem();
-            this.btnForceUpdateAll = new DevExpress.XtraBars.BarButtonItem();
-            this.btnForceUpdate = new DevExpress.XtraBars.BarButtonItem();
             this.bar2 = new DevExpress.XtraBars.Bar();
             this.beiStatus = new DevExpress.XtraBars.BarStaticItem();
             this.beiProcess = new DevExpress.XtraBars.BarEditItem();
             this.repositoryItemProgressBar1 = new DevExpress.XtraEditors.Repository.RepositoryItemProgressBar();
+            this.barStaticItem1 = new DevExpress.XtraBars.BarStaticItem();
             this.barDockControlTop = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlRight = new DevExpress.XtraBars.BarDockControl();
             this.barButtonItem1 = new DevExpress.XtraBars.BarButtonItem();
             this.barButtonItem2 = new DevExpress.XtraBars.BarButtonItem();
+            this.btnForceUpdateAll = new DevExpress.XtraBars.BarButtonItem();
+            this.btnForceUpdate = new DevExpress.XtraBars.BarButtonItem();
+            this.barListItem1 = new DevExpress.XtraBars.BarListItem();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.popupMenu1 = new DevExpress.XtraBars.PopupMenu(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -370,8 +372,10 @@
             this.btnForceUpdateAll,
             this.btnForceUpdate,
             this.beiProcess,
-            this.beiStatus});
-            this.barManager1.MaxItemId = 14;
+            this.beiStatus,
+            this.barListItem1,
+            this.barStaticItem1});
+            this.barManager1.MaxItemId = 16;
             this.barManager1.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemProgressBar1});
             this.barManager1.StatusBar = this.bar2;
@@ -408,22 +412,6 @@
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnUpdate_ItemClick);
             // 
-            // btnForceUpdateAll
-            // 
-            this.btnForceUpdateAll.Caption = "强制全部更新";
-            this.btnForceUpdateAll.Glyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdateAll.Glyph")));
-            this.btnForceUpdateAll.Id = 6;
-            this.btnForceUpdateAll.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdateAll.LargeGlyph")));
-            this.btnForceUpdateAll.Name = "btnForceUpdateAll";
-            // 
-            // btnForceUpdate
-            // 
-            this.btnForceUpdate.Caption = "强制更新";
-            this.btnForceUpdate.Glyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdate.Glyph")));
-            this.btnForceUpdate.Id = 7;
-            this.btnForceUpdate.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdate.LargeGlyph")));
-            this.btnForceUpdate.Name = "btnForceUpdate";
-            // 
             // bar2
             // 
             this.bar2.BarName = "Custom 3";
@@ -459,6 +447,13 @@
             // 
             this.repositoryItemProgressBar1.Name = "repositoryItemProgressBar1";
             this.repositoryItemProgressBar1.ShowTitle = true;
+            // 
+            // barStaticItem1
+            // 
+            this.barStaticItem1.Caption = "barStaticItem1";
+            this.barStaticItem1.Id = 15;
+            this.barStaticItem1.Name = "barStaticItem1";
+            this.barStaticItem1.TextAlignment = System.Drawing.StringAlignment.Near;
             // 
             // barDockControlTop
             // 
@@ -503,6 +498,28 @@
             this.barButtonItem2.Id = 1;
             this.barButtonItem2.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("barButtonItem2.LargeGlyph")));
             this.barButtonItem2.Name = "barButtonItem2";
+            // 
+            // btnForceUpdateAll
+            // 
+            this.btnForceUpdateAll.Caption = "强制全部更新";
+            this.btnForceUpdateAll.Glyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdateAll.Glyph")));
+            this.btnForceUpdateAll.Id = 6;
+            this.btnForceUpdateAll.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdateAll.LargeGlyph")));
+            this.btnForceUpdateAll.Name = "btnForceUpdateAll";
+            // 
+            // btnForceUpdate
+            // 
+            this.btnForceUpdate.Caption = "强制更新";
+            this.btnForceUpdate.Glyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdate.Glyph")));
+            this.btnForceUpdate.Id = 7;
+            this.btnForceUpdate.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnForceUpdate.LargeGlyph")));
+            this.btnForceUpdate.Name = "btnForceUpdate";
+            // 
+            // barListItem1
+            // 
+            this.barListItem1.Caption = "barListItem1";
+            this.barListItem1.Id = 14;
+            this.barListItem1.Name = "barListItem1";
             // 
             // webBrowser1
             // 
@@ -600,5 +617,7 @@
         private DevExpress.XtraBars.BarEditItem beiProcess;
         private DevExpress.XtraEditors.Repository.RepositoryItemProgressBar repositoryItemProgressBar1;
         private DevExpress.XtraBars.BarStaticItem beiStatus;
+        private DevExpress.XtraBars.BarStaticItem barStaticItem1;
+        private DevExpress.XtraBars.BarListItem barListItem1;
     }
 }

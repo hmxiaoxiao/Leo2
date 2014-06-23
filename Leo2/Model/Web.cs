@@ -147,6 +147,10 @@ namespace Leo2.Model
             return null;
         }
 
+
+        public int MaxCount { get; set; }
+
+
         /// <summary>
         /// 初始化网站的内容
         /// </summary>

@@ -143,10 +143,10 @@ namespace Leo2.Controller
         }
 
         // 根据名称建立对应的规则类，如果对应的规则类没有撰写就返回NULL
-        public BaseRule GetRuleFromWeb(Web web)
+        public static BaseRule GetRuleFromWeb(Web web)
         {
             Uri uri = new Uri(web.URL);
-            string classname = "Leo2.Helper." + uri.Authority.Replace('.', '_');
+            string classname = "Leo2.Rule." + uri.Authority.Replace('.', '_');
 
             Type type = Type.GetType(classname);
             if (type == null)        // 如果找不到类型，就返回NULL

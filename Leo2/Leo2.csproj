@@ -157,6 +157,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Doc\ToDoList.txt" />
     <Content Include="favicon.ico" />
     <Content Include="pro.ico" />
   </ItemGroup>

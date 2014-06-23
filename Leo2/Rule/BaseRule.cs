@@ -21,55 +21,90 @@ namespace Leo2.Rule
 
         #region 声明事件和委托
 
-        #region 开始下载列表页面事件
-        public delegate void DownPageEventHandler(object sender, DownPageEventArgs e);
-        public event DownPageEventHandler DownPage;
-
-        public class DownPageEventArgs : EventArgs
-        {
-            public readonly List<Page> m_pages;
-            public DownPageEventArgs(List<Page> pages)
+        #region  单网站网页扫描开始
+        public delegate void SiteScanBeginHandler(object sender, SiteScanBeginEventArgs e);
+        public event SiteScanBeginHandler SiteScanBegin;
+        public class SiteScanBeginEventArgs : EventArgs {
+            public readonly Web web;
+            public SiteScanBeginEventArgs(Web web)
             {
-                m_pages = pages;
+                this.web = web;
             }
         }
-
-
-        // 定义事件，触发时，调用所有关注的事件。
-        // 这里采用异步的联接方式，注意
-        public virtual void OnDownPage(DownPageEventArgs e)
+        public virtual void OnSiteScanBegin(SiteScanBeginEventArgs e)
         {
-            if (DownPage != null)
+            if (SiteScanBegin != null)
             {
-                Delegate[] delArray = DownPage.GetInvocationList();
+                Delegate[] delArray = SiteScanBegin.GetInvocationList();
 
                 foreach (Delegate del in delArray)
                 {
-                    DownPageEventHandler method = (DownPageEventHandler)del;
+                    SiteScanBeginHandler method = (SiteScanBeginHandler)del;
                     method.BeginInvoke(this, e, null, null);
                 }
             }
         }
         #endregion
 
-        #region 列表全部下载完成事件
-        public delegate void DownloadCompleteEventHandle(object sender, DownloadCompleteEventArgs e);
-        public event DownloadCompleteEventHandle DownloadComplete;
+        #region 列表页面扫描完成后的事件
+        public delegate void PageScanCompleteEventHandler(object sender, PageScanCompleteEventArgs e);
+        public event PageScanCompleteEventHandler PageScanComplete;
 
-        public class DownloadCompleteEventArgs : EventArgs
+        public class PageScanCompleteEventArgs : EventArgs
         {
-            public Web m_web;
-            public DownloadCompleteEventArgs(Web web)
+            public readonly List<Page> pages;
+            public readonly Web web;
+            public PageScanCompleteEventArgs(List<Page> pages, Web web)
             {
-                m_web = web;
+                this.pages = pages;
+                this.web = web;
             }
         }
 
-        public virtual void OnDownloadComplete(DownloadCompleteEventArgs e)
+
+        // 定义事件，触发时，调用所有关注的事件。
+        // 这里采用异步的联接方式，注意
+        public virtual void OnPageScanComplete(PageScanCompleteEventArgs e)
         {
-            if (DownloadComplete != null)
+            if (PageScanComplete != null)
             {
-                DownloadComplete(this, e);
+                Delegate[] delArray = PageScanComplete.GetInvocationList();
+
+                foreach (Delegate del in delArray)
+                {
+                    PageScanCompleteEventHandler method = (PageScanCompleteEventHandler)del;
+                    method.BeginInvoke(this, e, null, null);
+                }
+            }
+        }
+        #endregion
+
+        #region 单网站扫描完成事件
+        public delegate void SiteScanCompleteEventHandle(object sender, SiteScanCompleteEventArgs e);
+        public event SiteScanCompleteEventHandle SiteScanComplete;
+
+        public class SiteScanCompleteEventArgs : EventArgs
+        {
+            public Web web;
+            public readonly List<Page> pages;
+            public SiteScanCompleteEventArgs(List<Page> pages, Web web)
+            {
+                this.web = web;
+                this.pages = pages;
+            }
+        }
+
+        public virtual void OnSiteScanComplete(SiteScanCompleteEventArgs e)
+        {
+            if (SiteScanComplete != null)
+            {
+                Delegate[] delArray = SiteScanComplete.GetInvocationList();
+
+                foreach (Delegate del in delArray)
+                {
+                    SiteScanCompleteEventHandle method = (SiteScanCompleteEventHandle)del;
+                    method.BeginInvoke(this, e, null, null);
+                }
             }
         }
         #endregion
@@ -92,6 +127,7 @@ namespace Leo2.Rule
             {
                 if (m_max_page == -1)
                     m_max_page = GetPagesCount();
+                m_web.MaxCount = m_max_page;
                 return m_max_page;
             }
         }
@@ -115,43 +151,40 @@ namespace Leo2.Rule
         public BaseRule(Web web)
         {
             m_web = web;
+            Pages = new List<Page>();
             int itemp = MaxPage;        // 计算一下页面总数
             this.ExistPages = new XPCollection<Page>(XpoDefault.Session,
                     CriteriaOperator.Parse("Parent_ID = ?", web.Oid));
 
-            this.DownPage += SavePage;      // 开始下载时，自动保存
+            //this.PageScanComplete += SavePage;      // 开始下载时，自动保存
+            this.SiteScanComplete += SavePage;
         }
 
-
-        /// 取得列表界面上的每个页面的联接
-        /// <summary>
-        /// 取得列表界面上的每个页面的联接
-        /// </summary>
-        /// <param name="web"></param>
-        /// <param name="list_page_url">列表页面的URL</param>
-        /// <param name="update_all">
-        /// 是否要更新全部数据，是的话，不管数据库是否存在，都会从第一页到最后一页全部进行扫描，
-        /// 如果为否的话，则扫描到存在的记录后，不会再扫描了，直接返回。
-        /// </param>
-        /// <returns>
-        /// 成功或者失败
-        /// 成功后，分析出来的页面联接会放在静态变量PageList里。
-        /// </returns>
-        public bool GetPagesOnList(string url = "", bool search_over = false)
+        /// 取得单网站的扫描
+        public bool SingleSiteScan(string url = "", bool search_all = false)
         {
             // 如果下载的地址为空的话就取WEB的地址（第一次调用不用加的）
             if (string.IsNullOrEmpty(url))
                 url = m_web.URL;
 
+            // 触发开始扫描事件
+            SiteScanBeginEventArgs e1 = new SiteScanBeginEventArgs(m_web);
+            OnSiteScanBegin(e1);
+
+            return NextPageScan(url, search_all);
+        }
+
+        private bool NextPageScan(string url, bool search_all)
+        {
             // 下载该列表下的page联接
             GetPagesOnList(url);
 
             // 触发事件
-            DownPageEventArgs e = new DownPageEventArgs(Pages);
-            OnDownPage(e);
+            PageScanCompleteEventArgs e2 = new PageScanCompleteEventArgs(Pages, m_web);
+            OnPageScanComplete(e2);
 
             // 如果该栏目没有全部扫描过，就继续扫描
-            if (!(search_over &&
+            if (!(search_all &&
                 NewPageInExistPages()))     // 或者新的页面没有出现在页面列表里（表明全部都是新页面，那就要扫描下一页了）
             {
 
@@ -159,7 +192,7 @@ namespace Leo2.Rule
                 if (!string.IsNullOrEmpty(next_url))
                 {
                     // 如果取得下一页地址，就继续扫描
-                    return GetPagesOnList(next_url, search_over);
+                    return NextPageScan(next_url, search_all);
                 }
                 else
                 {
@@ -167,9 +200,8 @@ namespace Leo2.Rule
                     if (next_url == "")     // 空 表明全部搜索过了
                     {
                         //通知已经全部下载完成了。
-                        DownloadCompleteEventArgs eventComplete = new DownloadCompleteEventArgs(m_web);
-                        OnDownloadComplete(eventComplete);
-
+                        SiteScanCompleteEventArgs e3 = new SiteScanCompleteEventArgs(Pages,m_web);
+                        OnSiteScanComplete(e3);
 
                         return true;
                     }
@@ -179,6 +211,7 @@ namespace Leo2.Rule
             }
             return false;
         }
+
 
 
         /// 判断新取得的页面是否在新页面列表里存在
@@ -209,9 +242,6 @@ namespace Leo2.Rule
         /// <returns>正常返回为真，读取网页内容出错，则为假</returns>
         public bool GetPagesOnList(string list_url)
         {
-            // 清空已经获得的列表
-            Pages = new List<Page>();
-
             // 取得列表面的内容
             HtmlDocument doc = WebHelper.GetHtmlDocument(list_url);
             if (doc == null)
@@ -428,11 +458,11 @@ namespace Leo2.Rule
 
 
         // 保存页面到数据库里面
-        protected void SavePage(object sender, BaseRule.DownPageEventArgs e)
+        protected void SavePage(object sender, BaseRule.SiteScanCompleteEventArgs e)
         {
             using (UnitOfWork uow = new UnitOfWork())
             {
-                foreach (Page page in e.m_pages)
+                foreach (Page page in e.pages)
                 {
                     var fp = from p in ExistPages
                              where p.URL == page.URL
