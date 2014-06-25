@@ -84,7 +84,7 @@ namespace Leo2.Helper
             {
                 //目录结构：当前目录/content/父ID目录/当前ID目录/content.html
 
-                string filename = GetFilePath(page);
+                string filename = Leo2.Rule.BaseRule.GetFilePath(page);
                 FileStream fst = new FileStream(filename, FileMode.OpenOrCreate);
                 //写数据到a.txt格式
                 StreamWriter swt = new StreamWriter(fst, System.Text.Encoding.GetEncoding("utf-8"));
@@ -110,7 +110,7 @@ namespace Leo2.Helper
             string result = "";
             try
             {
-                string filename = GetFilePath(page);
+                string filename = Leo2.Rule.BaseRule.GetFilePath(page);
                 //如果没有找到文件，就先下载
                 if (!File.Exists(filename))
                 {
@@ -128,27 +128,27 @@ namespace Leo2.Helper
             return result;
         }
 
-        /// <summary>
-        /// 返回文件的路径
-        /// </summary>
-        /// <param name="page"></param>
-        /// <returns></returns>
-        private static string GetFilePath(Page page)
-        {
-            //获得当前目录
-            string dir = Directory.GetCurrentDirectory();
-            if (dir.Substring(dir.Length-1,1) != @"\")
-            {
-                dir = dir + @"\";
-            }
-            dir += @"Content\"+ page.Parent_ID + @"\" + page.Oid ;
-            //判断目录是否存在
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
-            return dir + @"\Content.html";
-        }
+        ///// <summary>
+        ///// 返回文件的路径
+        ///// </summary>
+        ///// <param name="page"></param>
+        ///// <returns></returns>
+        //private static string GetFilePath(Page page)
+        //{
+        //    //获得当前目录
+        //    string dir = Directory.GetCurrentDirectory();
+        //    if (dir.Substring(dir.Length-1,1) != @"\")
+        //    {
+        //        dir = dir + @"\";
+        //    }
+        //    dir += String.Format(@"Content\{0}", page.Parent_ID);
+        //    //判断目录是否存在
+        //    if (!Directory.Exists(dir))
+        //    {
+        //        Directory.CreateDirectory(dir);
+        //    }
+        //    return dir + @"\Content.html";
+        //}
 
         /// <summary>
         /// 根据网页的内容取得当前的日期

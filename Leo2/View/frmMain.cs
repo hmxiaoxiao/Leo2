@@ -107,7 +107,7 @@ namespace Leo2.View
                 return;
 
             int oid = int.Parse(gridView1.GetRowCellValue(gridView1.FocusedRowHandle, gridOid).ToString());
-            if (!(bool)gridView1.GetRowCellValue(gridView1.FocusedRowHandle, gridIsRead))
+            if (!(bool)gridView1.GetRowCellValue(gridView1.FocusedRowHandle, gridIsRead))       // 如果当前没有读取过的话
             {
                 m_controller.SetPageHasRead(oid);       // 设置网页已读
                 ChangeWebUnReadCount();                 // 更新数量
@@ -340,6 +340,25 @@ namespace Leo2.View
                 if (child.Nodes.Count > 0)
                     UpdateAll(child);
             }
+        }
+
+        // 下载page,只要没有下载的PAGE，会全部下载
+        CancellationTokenSource cts = null;
+        private Task m_page_task = null;
+        private void DownloadPageContent()
+        {
+            if(cts != null)
+                cts.Cancel();        // 取消过去的任务
+
+            cts = new CancellationTokenSource();
+
+            Task<bool> t = new Task<bool>(() => m_controller.DownloadPageContent(cts.Token), cts.Token);
+            t.Start();
+        }
+
+        private void btnDownload_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            DownloadPageContent();
         }
     }
 }

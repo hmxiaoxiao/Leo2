@@ -9,6 +9,8 @@ using Leo2.Helper;
 using DevExpress.Xpo;
 using DevExpress.Data.Filtering;
 using Leo2.Rule;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Leo2.Controller
 {
@@ -159,6 +161,21 @@ namespace Leo2.Controller
                 object obj = Activator.CreateInstance(type, parameters);
                 return (BaseRule)obj;
             }
+        }
+
+
+        // 批量下载所有的page的内容
+        public bool DownloadPageContent(CancellationToken ct)
+        {
+            XPCollection<Page> pages = new XPCollection<Page>(CriteriaOperator.Parse("Is_Down = ?", false));
+            foreach(Page p in pages)
+            {
+                if (ct.IsCancellationRequested)
+                    return false;       // 被取消后的退出
+                else
+                    PageHelper.GetSingleContentWithSave(p);
+            }
+            return true;            // 下载完成后退出
         }
 
 

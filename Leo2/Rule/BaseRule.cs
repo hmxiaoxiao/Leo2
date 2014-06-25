@@ -420,7 +420,7 @@ namespace Leo2.Rule
         /// </summary>
         /// <param name="page">需要下载的页面</param>
         /// <returns></returns>
-        private static string GetFilePath(Page page)
+        public static string GetFilePath(Page page)
         {
             //获得当前目录
             string dir = Directory.GetCurrentDirectory();
@@ -460,9 +460,10 @@ namespace Leo2.Rule
         // 保存页面到数据库里面
         protected void SavePage(object sender, BaseRule.SiteScanCompleteEventArgs e)
         {
-            using (UnitOfWork uow = new UnitOfWork())
+            using (UnitOfWork uow = new UnitOfWork())       // 开始事务
             {
-                foreach (Page page in e.pages)
+                //  对于每个取得的新页面，判断是否已经存在，如果不存在就保存
+                foreach (Page page in e.pages)      
                 {
                     var fp = from p in ExistPages
                              where p.URL == page.URL
@@ -471,8 +472,6 @@ namespace Leo2.Rule
                     {
                         Page newPage = new Page(uow) { Parent_ID = m_web.Oid, Title = page.Title, URL = page.URL };
                         newPage.Save();
-
-                        //ExistPages.Add(newPage);        //  加入已经找到的页面
                     }
                 }
                 uow.CommitChanges();

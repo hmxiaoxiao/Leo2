@@ -62,7 +62,6 @@
             this.beiStatus = new DevExpress.XtraBars.BarStaticItem();
             this.beiProcess = new DevExpress.XtraBars.BarEditItem();
             this.repositoryItemProgressBar1 = new DevExpress.XtraEditors.Repository.RepositoryItemProgressBar();
-            this.barStaticItem1 = new DevExpress.XtraBars.BarStaticItem();
             this.barDockControlTop = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlBottom = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
@@ -72,8 +71,10 @@
             this.btnForceUpdateAll = new DevExpress.XtraBars.BarButtonItem();
             this.btnForceUpdate = new DevExpress.XtraBars.BarButtonItem();
             this.barListItem1 = new DevExpress.XtraBars.BarListItem();
+            this.barStaticItem1 = new DevExpress.XtraBars.BarStaticItem();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.popupMenu1 = new DevExpress.XtraBars.PopupMenu(this.components);
+            this.btnDownload = new DevExpress.XtraBars.BarButtonItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -374,8 +375,9 @@
             this.beiProcess,
             this.beiStatus,
             this.barListItem1,
-            this.barStaticItem1});
-            this.barManager1.MaxItemId = 16;
+            this.barStaticItem1,
+            this.btnDownload});
+            this.barManager1.MaxItemId = 17;
             this.barManager1.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemProgressBar1});
             this.barManager1.StatusBar = this.bar2;
@@ -388,7 +390,8 @@
             this.bar1.DockStyle = DevExpress.XtraBars.BarDockStyle.Top;
             this.bar1.LinksPersistInfo.AddRange(new DevExpress.XtraBars.LinkPersistInfo[] {
             new DevExpress.XtraBars.LinkPersistInfo(DevExpress.XtraBars.BarLinkUserDefines.PaintStyle, this.btnUpdateAll, "", true, true, true, 0, null, DevExpress.XtraBars.BarItemPaintStyle.CaptionGlyph),
-            new DevExpress.XtraBars.LinkPersistInfo(DevExpress.XtraBars.BarLinkUserDefines.PaintStyle, this.btnUpdate, "", true, true, true, 0, null, DevExpress.XtraBars.BarItemPaintStyle.CaptionGlyph)});
+            new DevExpress.XtraBars.LinkPersistInfo(DevExpress.XtraBars.BarLinkUserDefines.PaintStyle, this.btnUpdate, "", true, true, true, 0, null, DevExpress.XtraBars.BarItemPaintStyle.CaptionGlyph),
+            new DevExpress.XtraBars.LinkPersistInfo(DevExpress.XtraBars.BarLinkUserDefines.PaintStyle, this.btnDownload, "", true, true, true, 0, null, DevExpress.XtraBars.BarItemPaintStyle.CaptionGlyph)});
             this.bar1.OptionsBar.AllowQuickCustomization = false;
             this.bar1.OptionsBar.DisableClose = true;
             this.bar1.OptionsBar.DisableCustomization = true;
@@ -396,7 +399,7 @@
             // 
             // btnUpdateAll
             // 
-            this.btnUpdateAll.Caption = "全部更新";
+            this.btnUpdateAll.Caption = "全部扫描";
             this.btnUpdateAll.Glyph = ((System.Drawing.Image)(resources.GetObject("btnUpdateAll.Glyph")));
             this.btnUpdateAll.Id = 3;
             this.btnUpdateAll.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnUpdateAll.LargeGlyph")));
@@ -405,7 +408,7 @@
             // 
             // btnUpdate
             // 
-            this.btnUpdate.Caption = "更新";
+            this.btnUpdate.Caption = "扫描";
             this.btnUpdate.Glyph = ((System.Drawing.Image)(resources.GetObject("btnUpdate.Glyph")));
             this.btnUpdate.Id = 5;
             this.btnUpdate.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnUpdate.LargeGlyph")));
@@ -447,13 +450,6 @@
             // 
             this.repositoryItemProgressBar1.Name = "repositoryItemProgressBar1";
             this.repositoryItemProgressBar1.ShowTitle = true;
-            // 
-            // barStaticItem1
-            // 
-            this.barStaticItem1.Caption = "barStaticItem1";
-            this.barStaticItem1.Id = 15;
-            this.barStaticItem1.Name = "barStaticItem1";
-            this.barStaticItem1.TextAlignment = System.Drawing.StringAlignment.Near;
             // 
             // barDockControlTop
             // 
@@ -521,6 +517,13 @@
             this.barListItem1.Id = 14;
             this.barListItem1.Name = "barListItem1";
             // 
+            // barStaticItem1
+            // 
+            this.barStaticItem1.Caption = "barStaticItem1";
+            this.barStaticItem1.Id = 15;
+            this.barStaticItem1.Name = "barStaticItem1";
+            this.barStaticItem1.TextAlignment = System.Drawing.StringAlignment.Near;
+            // 
             // webBrowser1
             // 
             this.webBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -539,6 +542,15 @@
             new DevExpress.XtraBars.LinkPersistInfo(this.btnForceUpdate)});
             this.popupMenu1.Manager = this.barManager1;
             this.popupMenu1.Name = "popupMenu1";
+            // 
+            // btnDownload
+            // 
+            this.btnDownload.Caption = "下载";
+            this.btnDownload.Glyph = ((System.Drawing.Image)(resources.GetObject("btnDownload.Glyph")));
+            this.btnDownload.Id = 16;
+            this.btnDownload.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnDownload.LargeGlyph")));
+            this.btnDownload.Name = "btnDownload";
+            this.btnDownload.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnDownload_ItemClick);
             // 
             // frmMain
             // 
@@ -619,5 +631,6 @@
         private DevExpress.XtraBars.BarStaticItem beiStatus;
         private DevExpress.XtraBars.BarStaticItem barStaticItem1;
         private DevExpress.XtraBars.BarListItem barListItem1;
+        private DevExpress.XtraBars.BarButtonItem btnDownload;
     }
 }
