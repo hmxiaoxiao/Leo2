@@ -78,49 +78,23 @@ namespace Leo2.View
         }
 
 
-        /// <summary>
-        /// 显示树结点对应的所有的网页列表
-        /// </summary>
-        private void ShowPageList(bool force_refresh = false)
+
+
+        // 右键菜单的处理
+        private void treeList1_MouseUp(object sender, MouseEventArgs e)
         {
-            // 判断当前结点是否为二级结点，是则刷新内容
-            if (treeList1.FocusedNode != null && (bool)treeList1.FocusedNode[treeIsSearch] == true)
+            if (e.Button == System.Windows.Forms.MouseButtons.Right)
             {
-                int oid = int.Parse(treeList1.FocusedNode[treeOid].ToString());     // 取得当前的ID
-                if (oid != m_current_web_oid || gridView1.RowCount <= 0 || force_refresh)            // 如果ID已经更改了就刷新
-                {
-                    m_pages = m_controller.GetSubPages(oid);
-                    gridControl1.DataSource = m_pages;
-                    m_current_web_oid = oid;
-                }
+                popupMenu1.ShowPopup(e.Location);
             }
-            ShowPageContent();
         }
 
-
-        /// <summary>
-        /// 显示网页的内容
-        /// </summary>
-        private void ShowPageContent()
+        // 下载所有的内容 
+        private void btnDownload_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            if (gridView1.FocusedRowHandle < 0)     // 如果表格中没有数据，就直接返回
-                return;
-
-            int oid = int.Parse(gridView1.GetRowCellValue(gridView1.FocusedRowHandle, gridOid).ToString());
-            if (!(bool)gridView1.GetRowCellValue(gridView1.FocusedRowHandle, gridIsRead))       // 如果当前没有读取过的话
-            {
-                m_controller.SetPageHasRead(oid);       // 设置网页已读
-                ChangeWebUnReadCount();                 // 更新数量
-            }
-
-            Page page = m_pages.FirstOrDefault(p => p.Oid == oid);
-            if (page != null)
-            {
-                page.Is_Read = true;
-                webBrowser1.DocumentText = page.DisplayContent();
-            }
-            gridView1.RefreshData();
+            DownloadPageContent();
         }
+
 
         // 更新树的已读数量
         private void ChangeWebUnReadCount()
@@ -136,17 +110,6 @@ namespace Leo2.View
             }
             treeList1.RefreshDataSource();
         }
-
-
-        // 右键菜单的处理
-        private void treeList1_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button == System.Windows.Forms.MouseButtons.Right)
-            {
-                popupMenu1.ShowPopup(e.Location);
-            }
-        }
-
         
         private static XPCollection<Web> m_batch_webs = null;
         private static int m_location = 0;
@@ -286,7 +249,7 @@ namespace Leo2.View
                 beiProcess.Visibility = DevExpress.XtraBars.BarItemVisibility.Always;
 
                 // 设置进度条的最大值 
-                this.repositoryItemProgressBar1.Maximum = e.web.MaxCount;
+                this.repositoryItemProgressBar1.Maximum = e.web.MaxPage;
 
                 // 初始化显示内容
                 beiStatus.Caption = string.Format(@"[{0}]开始准备下载...", e.web.Name);
@@ -307,7 +270,7 @@ namespace Leo2.View
             {
                 int process = int.Parse(beiProcess.EditValue.ToString());
                 beiProcess.EditValue = (++process);
-                beiStatus.Caption = string.Format(@"[{2}]正在下载...,一共{0}页, {1}页已扫描.", e.web.MaxCount, process, e.web.Name);
+                beiStatus.Caption = string.Format(@"[{2}]正在下载...,一共{0}页, {1}页已扫描.", e.web.MaxPage, process, e.web.Name);
             }
         }
 
@@ -327,24 +290,23 @@ namespace Leo2.View
             }
         }
 
-        private void UpdateAll(TreeListNode node, bool update_all = false)
-        {
-            foreach (TreeListNode child in node.Nodes)
-            {
-                if ((bool)child[treeIsSearch])
-                {
-                    m_controller.DownloadPageFromURL(int.Parse(child[treeOid].ToString()), update_all);
-                }
+        //private void UpdateAll(TreeListNode node, bool update_all = false)
+        //{
+        //    foreach (TreeListNode child in node.Nodes)
+        //    {
+        //        if ((bool)child[treeIsSearch])
+        //        {
+        //            m_controller.DownloadPageFromURL(int.Parse(child[treeOid].ToString()), update_all);
+        //        }
 
-                // 如果有子结点，就继续遍历
-                if (child.Nodes.Count > 0)
-                    UpdateAll(child);
-            }
-        }
+        //        // 如果有子结点，就继续遍历
+        //        if (child.Nodes.Count > 0)
+        //            UpdateAll(child);
+        //    }
+        //}
 
         // 下载page,只要没有下载的PAGE，会全部下载
         CancellationTokenSource cts = null;
-        private Task m_page_task = null;
         private void DownloadPageContent()
         {
             if(cts != null)
@@ -356,9 +318,51 @@ namespace Leo2.View
             t.Start();
         }
 
-        private void btnDownload_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        /// <summary>
+        /// 显示树结点对应的所有的网页列表
+        /// </summary>
+        private void ShowPageList(bool force_refresh = false)
         {
-            DownloadPageContent();
+            // 判断当前结点是否为二级结点，是则刷新内容
+            if (treeList1.FocusedNode != null && (bool)treeList1.FocusedNode[treeIsSearch] == true)
+            {
+                int oid = int.Parse(treeList1.FocusedNode[treeOid].ToString());     // 取得当前的ID
+                if (oid != m_current_web_oid || gridView1.RowCount <= 0 || force_refresh)            // 如果ID已经更改了就刷新
+                {
+                    m_pages = m_controller.GetSubPages(oid);
+                    gridControl1.DataSource = m_pages;
+                    m_current_web_oid = oid;
+                }
+            }
+            ShowPageContent();
         }
+
+
+        /// <summary>
+        /// 显示网页的内容
+        /// </summary>
+        private void ShowPageContent()
+        {
+            if (gridView1.FocusedRowHandle < 0)     // 如果表格中没有数据，就直接返回
+                return;
+
+            int oid = int.Parse(gridView1.GetRowCellValue(gridView1.FocusedRowHandle, gridOid).ToString());
+            if (!(bool)gridView1.GetRowCellValue(gridView1.FocusedRowHandle, gridIsRead))       // 如果当前没有读取过的话
+            {
+                m_controller.SetPageHasRead(oid);       // 设置网页已读
+                ChangeWebUnReadCount();                 // 更新数量
+            }
+
+            Page page = m_pages.FirstOrDefault(p => p.Oid == oid);
+            if (page != null)
+            {
+                page.Is_Read = true;
+                webBrowser1.DocumentText = page.DisplayContent();
+            }
+            gridView1.RefreshData();
+        }
+
+
+
     }
 }

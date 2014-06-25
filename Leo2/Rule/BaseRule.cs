@@ -111,13 +111,27 @@ namespace Leo2.Rule
 
         #endregion
 
-        protected string List_XPath { get; set; }      // 列表取数规则
-        protected string Page_Xpath { get; set; }      // 页面取数规则
-        public List<Page> Pages { get; set; }       // 当前的页面数
+        protected string List_XPath { get; set; }       // 列表取数规则
+        protected string Page_XPath { get; set; }       // 页面取数规则
+        public List<Page> Pages { get; set; }           // 当前的页面数
         protected XPCollection<Page> ExistPages { get; set; }  // 已经搜索到的页面
 
         private int m_max_page = -1;        // 记录最大的页数
-        protected Web m_web;
+
+        // 当前规则对应的Web
+        private Web m_web;
+        protected Web CurrentWeb
+        {
+            get
+            {
+                return m_web;
+            }
+            set
+            {
+                m_web = value;
+                m_web.MaxPage = this.MaxPage;
+            }
+        } 
   
 
         // 取得总共页数
@@ -127,7 +141,7 @@ namespace Leo2.Rule
             {
                 if (m_max_page == -1)
                     m_max_page = GetPagesCount();
-                m_web.MaxCount = m_max_page;
+                CurrentWeb.MaxPage = m_max_page;
                 return m_max_page;
             }
         }
@@ -150,14 +164,14 @@ namespace Leo2.Rule
         /// <param name="url"></param>
         public BaseRule(Web web)
         {
-            m_web = web;
+            CurrentWeb = web;
             Pages = new List<Page>();
-            int itemp = MaxPage;        // 计算一下页面总数
+            CurrentWeb.MaxPage = MaxPage;        // 计算一下页面总数
             this.ExistPages = new XPCollection<Page>(XpoDefault.Session,
                     CriteriaOperator.Parse("Parent_ID = ?", web.Oid));
 
-            //this.PageScanComplete += SavePage;      // 开始下载时，自动保存
-            this.SiteScanComplete += SavePage;
+            // 开始下载时，自动保存    
+            this.SiteScanComplete += SavePage;      
         }
 
         /// 取得单网站的扫描
@@ -165,10 +179,10 @@ namespace Leo2.Rule
         {
             // 如果下载的地址为空的话就取WEB的地址（第一次调用不用加的）
             if (string.IsNullOrEmpty(url))
-                url = m_web.URL;
+                url = CurrentWeb.URL;
 
             // 触发开始扫描事件
-            SiteScanBeginEventArgs e1 = new SiteScanBeginEventArgs(m_web);
+            SiteScanBeginEventArgs e1 = new SiteScanBeginEventArgs(CurrentWeb);
             OnSiteScanBegin(e1);
 
             return NextPageScan(url, search_all);
@@ -180,7 +194,7 @@ namespace Leo2.Rule
             GetPagesOnList(url);
 
             // 触发事件
-            PageScanCompleteEventArgs e2 = new PageScanCompleteEventArgs(Pages, m_web);
+            PageScanCompleteEventArgs e2 = new PageScanCompleteEventArgs(Pages, CurrentWeb);
             OnPageScanComplete(e2);
 
             // 如果该栏目没有全部扫描过，就继续扫描
@@ -200,7 +214,7 @@ namespace Leo2.Rule
                     if (next_url == "")     // 空 表明全部搜索过了
                     {
                         //通知已经全部下载完成了。
-                        SiteScanCompleteEventArgs e3 = new SiteScanCompleteEventArgs(Pages,m_web);
+                        SiteScanCompleteEventArgs e3 = new SiteScanCompleteEventArgs(Pages,CurrentWeb);
                         OnSiteScanComplete(e3);
 
                         return true;
@@ -308,7 +322,7 @@ namespace Leo2.Rule
         /// <returns></returns>
         protected string GeneRightURL(string next_url)
         {
-            Uri u = new Uri(this.m_web.URL);
+            Uri u = new Uri(this.CurrentWeb.URL);
             string web_root = "http://" + u.Authority;
             string real_next_url = "";
 
@@ -342,28 +356,86 @@ namespace Leo2.Rule
         }
 
 
-        /// 下载指定网页的内容
+
+
+
+        // 保存所有扫描出来的页面到数据库里面
+        protected void SavePage(object sender, BaseRule.SiteScanCompleteEventArgs e)
+        {
+            using (UnitOfWork uow = new UnitOfWork())       // 开始事务
+            {
+                //  对于每个取得的新页面，判断是否已经存在，如果不存在就保存
+                foreach (Page page in e.pages)      
+                {
+                    var fp = from p in ExistPages
+                             where p.URL == page.URL
+                             select p;
+                    if (fp.Count() == 0)
+                    {
+                        Page newPage = new Page(uow) { Parent_ID = CurrentWeb.Oid, Title = page.Title, URL = page.URL };
+                        newPage.Save();
+                    }
+                }
+                uow.CommitChanges();
+            }
+        }
+
+        #region 页面下载的处理函数
+
         /// <summary>
         /// 下载指定网页的内容
         /// </summary>
         /// <param name="p"></param>
-        public void GetSingleContentWithSave(Page p)
+        public string GetSingleContentWithSave(Page p)
         {
-            HtmlDocument doc = WebHelper.GetHtmlDocument(p.URL);
-            string[] xpaths = Page_Xpath.Split('|');
-            foreach (string xpath in xpaths)
+            XPCollection<Web> list = new XPCollection<Web>(
+                CriteriaOperator.Parse("Oid = ?", p.Parent_ID));
+
+            // 如果没有取得Page就退出
+            if (list.Count() > 0)
             {
-                HtmlNodeCollection firstpage = doc.DocumentNode.SelectNodes(xpath);
+                HtmlDocument doc = WebHelper.GetHtmlDocument(p.URL, list[0].Encoding);
+                HtmlNodeCollection firstpage = doc.DocumentNode.SelectNodes(Page_XPath);
 
                 if (firstpage != null && firstpage.Count >= 1)
                 {
                     p.CDate = GetDataFromContent(doc.DocumentNode.InnerHtml);
                     p.Is_Down = SaveContentToFile(p, firstpage[0].InnerHtml);
                     p.Save();
+                    return firstpage[0].InnerHtml;
                 }
             }
+
+            return "";
         }
 
+        /// <summary>
+        /// 把网页的内容存到文件中
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        private static bool SaveContentToFile(Page page, string content)
+        {
+            try
+            {
+                //目录结构：当前目录/content/父ID目录/当前ID.html
+                string filename = Page.GetFilePath(page);
+                using (FileStream fst = new FileStream(filename, FileMode.Append))
+                {
+                    //写数据到a.txt格式
+                    using (StreamWriter swt = new StreamWriter(fst, System.Text.Encoding.GetEncoding("utf-8")))
+                    {
+                        swt.Write(content);
+                    }
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         /// 根据网页的内容取得该网页的发布日期
         /// <summary>
@@ -382,63 +454,6 @@ namespace Leo2.Rule
             return cdate;
         }
 
-
-        /// <summary>
-        /// 把网页的内容存到文件中
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
-        private static bool SaveContentToFile(Page page, string content)
-        {
-
-            try
-            {
-                //目录结构：当前目录/content/父ID目录/当前ID.html
-                string filename = GetFilePath(page);
-                using (FileStream fst = new FileStream(filename, FileMode.Append))
-                {
-                    //写数据到a.txt格式
-                    using (StreamWriter swt = new StreamWriter(fst, System.Text.Encoding.GetEncoding("utf-8")))
-                    {
-                        swt.Write(content);
-                    }
-                }
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 返回页面所对应的文件
-        /// 文件存放规则为content为主目录
-        /// page的父结点的ID为子目录
-        /// page的ID为文件名
-        /// </summary>
-        /// <param name="page">需要下载的页面</param>
-        /// <returns></returns>
-        public static string GetFilePath(Page page)
-        {
-            //获得当前目录
-            string dir = Directory.GetCurrentDirectory();
-            if (dir.Substring(dir.Length - 1, 1) != @"\")
-            {
-                dir = dir + @"\";
-            }
-
-            dir += String.Format(@"content\{0}", page.Parent_ID);
-            if (!Directory.Exists(dir))            //判断目录是否存在
-            {
-                Directory.CreateDirectory(dir); 
-            }
-
-            return string.Format(@"{0}\{1}.html", dir, page.Oid);// +@"\Content.html";
-        }
-
-
         /// <summary>
         /// 恢复html中的特殊字符
         /// </summary>
@@ -455,27 +470,6 @@ namespace Leo2.Rule
             return theString;
         }
 
-
-
-        // 保存页面到数据库里面
-        protected void SavePage(object sender, BaseRule.SiteScanCompleteEventArgs e)
-        {
-            using (UnitOfWork uow = new UnitOfWork())       // 开始事务
-            {
-                //  对于每个取得的新页面，判断是否已经存在，如果不存在就保存
-                foreach (Page page in e.pages)      
-                {
-                    var fp = from p in ExistPages
-                             where p.URL == page.URL
-                             select p;
-                    if (fp.Count() == 0)
-                    {
-                        Page newPage = new Page(uow) { Parent_ID = m_web.Oid, Title = page.Title, URL = page.URL };
-                        newPage.Save();
-                    }
-                }
-                uow.CommitChanges();
-            }
-        }
+        #endregion
     }
 }

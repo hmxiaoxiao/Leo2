@@ -26,7 +26,7 @@ namespace Leo2.Rule
         {
             // 设置取数规则
             base.List_XPath = list_xpath;
-            base.Page_Xpath = page_xpath;
+            base.Page_XPath = page_xpath;
         }
 
                 /// 取得国资委列表的页数
@@ -40,7 +40,7 @@ namespace Leo2.Rule
         protected override int GetPagesCount()
         {            
             // 先读取内容 
-            HtmlDocument doc = WebHelper.GetHtmlDocument(m_web.URL);
+            HtmlDocument doc = WebHelper.GetHtmlDocument(CurrentWeb.URL);
 
             string next_url = "";
             HtmlNodeCollection lists = doc.DocumentNode.SelectNodes("//a");
@@ -58,7 +58,7 @@ namespace Leo2.Rule
             }
 
             // 补全地址
-            Uri u = new Uri(this.m_web.URL);
+            Uri u = new Uri(this.CurrentWeb.URL);
             string web_root = "http://" + u.Authority;
             next_url = web_root + next_url;
 

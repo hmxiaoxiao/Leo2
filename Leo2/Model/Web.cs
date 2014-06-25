@@ -148,7 +148,8 @@ namespace Leo2.Model
         }
 
 
-        public int MaxCount { get; set; }
+        // 最大的页数，注意随着时间的增长会有变化 
+        public int MaxPage { get; set; }
 
 
         /// <summary>

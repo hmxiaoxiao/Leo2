@@ -6,6 +6,7 @@ using System.Text;
 using DevExpress.Xpo;
 using DevExpress.Data.Filtering;
 using Leo2.Helper;
+using System.IO;
 
 namespace Leo2.Model
 {
@@ -172,7 +173,7 @@ a:visited {text-decoration: none}
         /// <summary>
         /// 设置当前网页已读
         /// </summary>
-        public void HasRead()
+        public void ReadyRead()
         {
             this.Is_Read = true;
             this.Save();
@@ -185,56 +186,103 @@ a:visited {text-decoration: none}
         /// <returns></returns>
         public string DisplayContent()
         {
-            m_content = PageHelper.GetContentFromFile(this);
-            string temp = string.Format(m_template, m_title, m_content, m_css);
-            return temp;
+            m_content = GetContentFromFile(this);
+            return string.Format(m_template, m_title, m_content, m_css);
         }
 
 
         /// <summary>
-        /// 取得指定网站的所有的网页的列表
+        /// 获得文件内容
         /// </summary>
-        /// <param name="web_oid"></param>
+        /// <param name="page"></param>
         /// <returns></returns>
-        public static XPCollection<Page> GetSubPages(int web_oid)
+        public static string GetContentFromFile(Page page)
         {
-            XPCollection<Page> pages = new XPCollection<Page>(XpoDefault.Session,
-                Page.Fields.Parent_ID == web_oid);
-            return pages;
-        }
+            string result = "";
+            string filename = GetFilePath(page);
+            //如果没有找到文件，就先下载
+            if (!File.Exists(filename))
+            {
+                // TODO 要通过下载规则下载
+                XPCollection<Web> webs = new XPCollection<Web>(
+                    CriteriaOperator.Parse("Oid = ?", page.Parent_ID));
+                if (webs.Count() <= 0)
+                    return "";
+                Leo2.Rule.BaseRule br = Leo2.Controller.LeoController.GetRuleFromWeb(webs[0]);
+                if (br == null)
+                    return "";
 
-        /// <summary>
-        /// 根据ID创建对象。
-        /// </summary>
-        /// <param name="page_oid"></param>
-        /// <returns></returns>
-        public static Page CreatePageWithOID(int page_oid)
-        {
-            XPCollection<Page> pages = new XPCollection<Page>(XpoDefault.Session,
-                Page.Fields.Oid == page_oid);
-            if (pages.Count> 0)
-                return pages[0];
+                return br.GetSingleContentWithSave(page);
+            }
             else
-                return null;
+            {
+                StreamReader srt = new StreamReader(filename, Convert.ToBoolean(FileMode.Open));
+                //存在
+                result = srt.ReadToEnd();
+                srt.Close();
+                return result;
+            }
         }
+
+
+        /// <summary>
+        /// 返回页面所对应的文件
+        /// 文件存放规则为content为主目录
+        /// page的父结点的ID为子目录
+        /// page的ID为文件名
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public static string GetFilePath(Page page)
+        {
+            //获得当前目录
+            string dir = Directory.GetCurrentDirectory();
+            if (dir.Substring(dir.Length - 1, 1) != @"\")
+            {
+                dir = dir + @"\";
+            }
+
+            dir += String.Format(@"content\{0}", page.Parent_ID);
+            if (!Directory.Exists(dir))            //判断目录是否存在
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            return string.Format(@"{0}\{1}.html", dir, page.Oid);// +@"\Content.html";
+        }
+
+        ///// <summary>
+        ///// 根据ID创建对象。
+        ///// </summary>
+        ///// <param name="page_oid"></param>
+        ///// <returns></returns>
+        //public static Page CreatePageWithOID(int page_oid)
+        //{
+        //    XPCollection<Page> pages = new XPCollection<Page>(XpoDefault.Session,
+        //        Page.Fields.Oid == page_oid);
+        //    if (pages.Count> 0)
+        //        return pages[0];
+        //    else
+        //        return null;
+        //}
 
 
 
         /// <summary>
         /// 这个内部类是用来做查询的时候用的。
-        /// </summary>
-        public new class Fields
-        {
-            private Fields() { }
-            public static OperandProperty Parent_ID
-            {
-                get { return new OperandProperty("Parent_ID"); }
-            }
+        ///// </summary>
+        //public new class Fields
+        //{
+        //    private Fields() { }
+        //    public static OperandProperty Parent_ID
+        //    {
+        //        get { return new OperandProperty("Parent_ID"); }
+        //    }
 
-            public static OperandParameter Oid
-            {
-                get { return new OperandParameter("Oid"); }
-            }
-        }
+        //    public static OperandParameter Oid
+        //    {
+        //        get { return new OperandParameter("Oid"); }
+        //    }
+        //}
     }
 }

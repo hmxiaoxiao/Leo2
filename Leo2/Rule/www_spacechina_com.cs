@@ -31,15 +31,15 @@ namespace Leo2.Rule
         {
             // 设置取数规则
             base.List_XPath = list_xpath;
-            base.Page_Xpath = page_xpath;
+            base.Page_XPath = page_xpath;
         }
 
 
         protected override int GetPagesCount()
         {            
             // 先读取内容 
-            Uri u = new Uri(m_web.URL);
-            HtmlDocument doc = WebHelper.GetHtmlDocument(m_web.URL);
+            Uri u = new Uri(CurrentWeb.URL);
+            HtmlDocument doc = WebHelper.GetHtmlDocument(CurrentWeb.URL);
             HtmlNodeCollection lists = doc.DocumentNode.SelectNodes("//div[@id='content_list']/div[@style='display:none']/a");
             foreach (HtmlNode node in lists)
             {

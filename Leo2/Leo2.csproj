@@ -101,8 +101,6 @@
     <Compile Include="ConsoleProgram.cs" />
     <Compile Include="Controller\LeoController.cs" />
     <Compile Include="Rule\BaseRule.cs" />
-    <Compile Include="Helper\ListHelper.cs" />
-    <Compile Include="Helper\PageHelper.cs" />
     <Compile Include="Helper\WebHelper.cs" />
     <Compile Include="Rule\www_cnecc_com.cs" />
     <Compile Include="Rule\www_cnnc_com_cn.cs" />

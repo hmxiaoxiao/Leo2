@@ -50,39 +50,39 @@ namespace Leo2.Controller
         }
 
 
-        /// <summary>
-        /// 下载指定的联接
-        /// </summary>
-        /// <param name="web_oid"></param>
-        /// <returns></returns>
-        public List<Page> DownloadPageFromURL(int web_oid, bool update_all = false)
-        {
-            var webs = from w in Session.DefaultSession.Query<Web>()
-                       where w.Oid == web_oid
-                       select w;
-            foreach (Web web in webs)
-            {
-                ListHelper.PageList = new List<Page>();
-                ListHelper.GetAndSavePagesOnList(web, web.URL, update_all);
-                SetUnreadCount(web, ListHelper.PageList.Count);
-                //PageHelper.GetAllContentWithSave();
-                return ListHelper.PageList;
+        ///// <summary>
+        ///// 下载指定的联接
+        ///// </summary>
+        ///// <param name="web_oid"></param>
+        ///// <returns></returns>
+        //public List<Page> DownloadPageFromURL(int web_oid, bool update_all = false)
+        //{
+        //    var webs = from w in Session.DefaultSession.Query<Web>()
+        //               where w.Oid == web_oid
+        //               select w;
+        //    foreach (Web web in webs)
+        //    {
+        //        ListHelper.PageList = new List<Page>();
+        //        ListHelper.GetAndSavePagesOnList(web, web.URL, update_all);
+        //        SetUnreadCount(web, ListHelper.PageList.Count);
+        //        //PageHelper.GetAllContentWithSave();
+        //        return ListHelper.PageList;
 
-            }
+        //    }
 
-            return new List<Page>();
-        }
+        //    return new List<Page>();
+        //}
 
-        /// <summary>
-        /// 设置当前结点未读的数量
-        /// </summary>
-        /// <param name="web"></param>
-        /// <param name="unread"></param>
-        private void SetUnreadCount(Web web, int unread)
-        {
-            web.Unread += unread;
-            web.Save();
-        }
+        ///// <summary>
+        ///// 设置当前结点未读的数量
+        ///// </summary>
+        ///// <param name="web"></param>
+        ///// <param name="unread"></param>
+        //private void SetUnreadCount(Web web, int unread)
+        //{
+        //    web.Unread += unread;
+        //    web.Save();
+        //}
 
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Leo2.Controller
         /// <returns></returns>
         public XPCollection<Page> GetSubPages(int oid)
         {
-            return Page.GetSubPages(oid);
+            return new XPCollection<Page>(CriteriaOperator.Parse("Parent_ID = ?", oid));
         }
 
 
@@ -172,8 +172,9 @@ namespace Leo2.Controller
             {
                 if (ct.IsCancellationRequested)
                     return false;       // 被取消后的退出
-                else
-                    PageHelper.GetSingleContentWithSave(p);
+                //else
+                    // TODO 这里需要跟踪处理
+                    // PageHelper.GetSingleContentWithSave(p);
             }
             return true;            // 下载完成后退出
         }
@@ -192,24 +193,13 @@ namespace Leo2.Controller
         //测试联接
         public void RunTestLink()
         {
-            XPQuery<Web> webQuery = new XPQuery<Web>(XpoDefault.Session);
-
-            // 测试国资委
-            var webs = from w in webQuery
-                       where w.Name == "中国文化产业发展集团公司"
-                       select w;
-
-            ListHelper.PageList.Clear();
-            foreach (Web web in webs)
-            {
-                ListHelper.GetAndSavePagesOnList(web, web.URL);
-            }
+            return;
         }
 
         // 测试页面
         public void RunTestPage()
         {
-            PageHelper.GetSingleContentWithSave(29587);
+            return;
         }
     }
 }
