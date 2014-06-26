@@ -7,6 +7,7 @@ using Leo2.Helper;
 using Leo2.Model;
 using DevExpress.Xpo.DB;
 using DevExpress.Xpo;
+using Leo2.Controller;
 
 namespace Leo2.Rule
 {
@@ -18,12 +19,9 @@ namespace Leo2.Rule
         [STAThread]
         static void Main()
         {
-            // 设置当前的数据库联接
-            string ConnectionString = AccessConnectionProvider.GetConnectionString("Web.mdb"); //SQLiteConnectionProvider.GetConnectionString("Web.DB");
-            XpoDefault.DataLayer = XpoDefault.GetDataLayer(ConnectionString, AutoCreateOption.DatabaseAndSchema);
+            LeoController.InitDatabase();       // 初始化数据库
 
-
-            Web myweb = new Web();
+            Web myweb = new Web(new Session(XpoDefault.DataLayer));
             myweb.URL = "http://www.spacechina.com/n25/n144/n206/n214/index.html";
             m_sasac = new www_spacechina_com(myweb);
             int i = m_sasac.MaxPage;
@@ -31,7 +29,7 @@ namespace Leo2.Rule
 
             m_sasac.PageScanComplete += ShowMessage;
 
-            m_sasac.SingleSiteScan();
+            m_sasac.PrepareScan();
 
             Console.WriteLine("按任意键退出");
             Console.ReadKey();
@@ -40,7 +38,7 @@ namespace Leo2.Rule
         private static int m_count = 0;
         private static www_spacechina_com m_sasac;
 
-        public static void ShowMessage(object sender, BaseRule.PageScanCompleteEventArgs e)
+        public static void ShowMessage(object sender, BaseRule.ScanCompleteEventArgs e)
         {
             m_count ++;
             Console.WriteLine(@"已经下载了{0}页，共{1}页", m_count, m_sasac.MaxPage);

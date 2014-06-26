@@ -123,7 +123,7 @@ namespace Leo2.View
 
             this.Cursor = Cursors.WaitCursor;   // 设置忙光标
 
-            m_batch_webs = new XPCollection<Web>(CriteriaOperator.Parse("Is_Search = ?", true));
+            m_batch_webs = new XPCollection<Web>(new Session(XpoDefault.DataLayer), CriteriaOperator.Parse("Is_Search = ?", true));
             Task taskA = Task.Factory.StartNew(() => BatchStartSingleScan());
 
             this.Cursor = Cursors.Default;      // 光标恢复正常
@@ -155,12 +155,12 @@ namespace Leo2.View
             rule.SiteScanBegin += ShowBeginScan;
             rule.PageScanComplete += ShowProcess;
             rule.SiteScanComplete += ShowBatchCompleteInfo;
-            rule.SingleSiteScan();
+            rule.PrepareScan();
         }
 
 
         // 扫描完成后的显示处理
-        private void ShowBatchCompleteInfo(object sender, BaseRule.SiteScanCompleteEventArgs e)
+        private void ShowBatchCompleteInfo(object sender, BaseRule.ScanCompleteEventArgs e)
         {
             if (this.InvokeRequired)
             {
@@ -205,7 +205,7 @@ namespace Leo2.View
 
             // 取得对应的Web
             int web_id = int.Parse(treeList1.FocusedNode[treeOid].ToString());
-            XPCollection<Web> webs = new XPCollection<Web>(XpoDefault.Session,
+            XPCollection<Web> webs = new XPCollection<Web>(new Session(XpoDefault.DataLayer),
                 CriteriaOperator.Parse("Oid = ?", web_id));
             Debug.Assert(webs.Count() == 1);
             Web current_web = webs[0];
@@ -235,7 +235,7 @@ namespace Leo2.View
             rule.SiteScanBegin += ShowBeginScan;
             rule.PageScanComplete += ShowProcess;
             rule.SiteScanComplete += ShowCompleteInfo;
-            rule.SingleSiteScan();
+            rule.PrepareScan();
         }
 
         // 开始扫描时，界面的显示
@@ -263,7 +263,7 @@ namespace Leo2.View
 
 
         // 显示扫描的进度
-        private void ShowProcess(object sender, BaseRule.PageScanCompleteEventArgs e)
+        private void ShowProcess(object sender, BaseRule.ScanCompleteEventArgs e)
         {
             if (this.InvokeRequired)
             {
@@ -278,7 +278,7 @@ namespace Leo2.View
         }
 
         // 扫描完成后的显示处理
-        private void ShowCompleteInfo(object sender, BaseRule.SiteScanCompleteEventArgs e)
+        private void ShowCompleteInfo(object sender, BaseRule.ScanCompleteEventArgs e)
         {
             if (this.InvokeRequired)
             {
@@ -362,7 +362,8 @@ namespace Leo2.View
                 if (oid != m_current_web_oid || gridView1.RowCount <= 0 || force_refresh)            // 如果ID已经更改了就刷新
                 {
                     m_pages = m_controller.GetSubPages(oid);
-                    gridControl1.DataSource = m_pages;
+                    gridControl1.DataSource = m_pages.ToList<Page>();
+
                     m_current_web_oid = oid;
                 }
             }

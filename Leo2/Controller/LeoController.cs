@@ -12,6 +12,9 @@ using Leo2.Rule;
 using System.Threading.Tasks;
 using System.Threading;
 
+using DevExpress.Xpo.DB;
+using System.Reflection;
+
 namespace Leo2.Controller
 {
     public class LeoController : IDisposable
@@ -46,7 +49,7 @@ namespace Leo2.Controller
         /// <returns></returns>
         public XPCollection<Web> GetAllWebs()
         {
-            return new XPCollection<Web>();
+            return new XPCollection<Web>(new Session(XpoDefault.DataLayer));
         }
 
 
@@ -131,7 +134,7 @@ namespace Leo2.Controller
         /// <returns></returns>
         public XPCollection<Page> GetSubPages(int oid)
         {
-            return new XPCollection<Page>(CriteriaOperator.Parse("Parent_ID = ?", oid));
+            return new XPCollection<Page>(new Session(), CriteriaOperator.Parse("Parent_ID = ?", oid));
         }
 
 
@@ -192,7 +195,7 @@ namespace Leo2.Controller
         // 批量下载所有的page的内容
         public bool DownloadPageContent(CancellationToken ct)
         {
-            XPCollection<Page> pages = new XPCollection<Page>(CriteriaOperator.Parse("Is_Down = ?", false));
+            XPCollection<Page> pages = new XPCollection<Page>(new Session(XpoDefault.DataLayer), CriteriaOperator.Parse("Is_Down = ?", false));
             foreach(Page p in pages)
             {
                 if (ct.IsCancellationRequested)
@@ -211,6 +214,68 @@ namespace Leo2.Controller
             }
             OnAllPageDownloadComplete(new EventArgs());     // 通知下载结束
             return true;            // 下载完成后退出
+        }
+
+
+        public static ThreadSafeDataLayer GetThreadSafeDataLayer()
+        {
+            string ConnectionString = AccessConnectionProvider.GetConnectionString("Web.mdb"); //SQLiteConnectionProvider.GetConnectionString("Web.DB");
+
+            // 加入线程安全
+            List<Assembly> dataAssemblies = new List<Assembly>();
+            dataAssemblies.Add(typeof(Leo2.Model.Page).Assembly);
+            dataAssemblies.Add(typeof(Leo2.Model.Web).Assembly);
+
+            //XpoDefault.ConnectionString = AccessConnectionProvider.GetConnectionString("data.mdb");
+            //var dataStore = XpoDefault.GetConnectionProvider(AutoCreateOption.DatabaseAndSchema);
+
+            //var dict = new ReflectionDictionary();
+            //dict.CollectClassInfos(dataAssemblies.ToArray());
+            //var dataLayer = new ThreadSafeDataLayer(dict, dataStore);
+
+            DevExpress.Xpo.Metadata.XPDictionary dict = new DevExpress.Xpo.Metadata.ReflectionDictionary();
+            IDataStore store = XpoDefault.GetConnectionProvider(ConnectionString, AutoCreateOption.SchemaAlreadyExists);
+            dict.GetDataStoreSchema(dataAssemblies.ToArray());
+            return new ThreadSafeDataLayer(dict, store);
+        }
+
+        public static void InitDatabase()
+        {
+            // Code that runs on the application startup
+            // Specify the connection string, which is used to open a database.
+            // It's supposed that you've already created the Comments database within the App_Data folder.
+            string conn = DevExpress.Xpo.DB.AccessConnectionProvider.GetConnectionString("Web.mdb");
+            DevExpress.Xpo.Metadata.XPDictionary dict = new DevExpress.Xpo.Metadata.ReflectionDictionary();
+            // Initialize the XPO dictionary.
+            dict.GetDataStoreSchema(typeof(Page).Assembly);
+            dict.GetDataStoreSchema(typeof(Web).Assembly);
+            DevExpress.Xpo.XpoDefault.Session = null;
+            DevExpress.Xpo.DB.IDataStore store = DevExpress.Xpo.XpoDefault.GetConnectionProvider(conn, DevExpress.Xpo.DB.AutoCreateOption.DatabaseAndSchema);
+            DevExpress.Xpo.XpoDefault.DataLayer = new DevExpress.Xpo.ThreadSafeDataLayer(dict, store);
+            DevExpress.Xpo.XpoDefault.Session = new Session(XpoDefault.DataLayer);
+
+            //// 设置当前的数据库联接
+            //string ConnectionString = AccessConnectionProvider.GetConnectionString("Web.mdb"); //SQLiteConnectionProvider.GetConnectionString("Web.DB");
+            ////XpoDefault.DataLayer = XpoDefault.GetDataLayer(ConnectionString, AutoCreateOption.DatabaseAndSchema);
+
+
+            //// 加入线程安全
+            //List<Assembly> dataAssemblies = new List<Assembly>();
+            //dataAssemblies.Add(typeof(Leo2.Model.Page).Assembly);
+            //dataAssemblies.Add(typeof(Leo2.Model.Web).Assembly);
+
+            ////XpoDefault.ConnectionString = AccessConnectionProvider.GetConnectionString("data.mdb");
+            ////var dataStore = XpoDefault.GetConnectionProvider(AutoCreateOption.DatabaseAndSchema);
+
+            ////var dict = new ReflectionDictionary();
+            ////dict.CollectClassInfos(dataAssemblies.ToArray());
+            ////var dataLayer = new ThreadSafeDataLayer(dict, dataStore);
+
+            //DevExpress.Xpo.Metadata.XPDictionary dict = new DevExpress.Xpo.Metadata.ReflectionDictionary();
+            //IDataStore store = XpoDefault.GetConnectionProvider(ConnectionString, AutoCreateOption.SchemaAlreadyExists);
+            //dict.GetDataStoreSchema(dataAssemblies.ToArray());
+            //ThreadSafeDataLayer datalayer = new ThreadSafeDataLayer(dict, store);
+            //XpoDefault.DataLayer = datalayer;
         }
 
 

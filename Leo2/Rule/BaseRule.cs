@@ -47,24 +47,24 @@ namespace Leo2.Rule
         #endregion
 
         #region 列表页面扫描完成后的事件
-        public delegate void PageScanCompleteEventHandler(object sender, PageScanCompleteEventArgs e);
+        public delegate void PageScanCompleteEventHandler(object sender, ScanCompleteEventArgs e);
         public event PageScanCompleteEventHandler PageScanComplete;
 
-        public class PageScanCompleteEventArgs : EventArgs
-        {
-            public readonly List<Page> pages;
-            public readonly Web web;
-            public PageScanCompleteEventArgs(List<Page> pages, Web web)
-            {
-                this.pages = pages;
-                this.web = web;
-            }
-        }
+        //public class PageScanCompleteEventArgs : EventArgs
+        //{
+        //    public readonly List<Page> pages;
+        //    public readonly Web web;
+        //    public PageScanCompleteEventArgs(List<Page> pages, Web web)
+        //    {
+        //        this.pages = pages;
+        //        this.web = web;
+        //    }
+        //}
 
 
         // 定义事件，触发时，调用所有关注的事件。
         // 这里采用异步的联接方式，注意
-        public virtual void OnPageScanComplete(PageScanCompleteEventArgs e)
+        public virtual void OnPageScanComplete(ScanCompleteEventArgs e)
         {
             if (PageScanComplete != null)
             {
@@ -80,21 +80,21 @@ namespace Leo2.Rule
         #endregion
 
         #region 单网站扫描完成事件
-        public delegate void SiteScanCompleteEventHandle(object sender, SiteScanCompleteEventArgs e);
+        public delegate void SiteScanCompleteEventHandle(object sender, ScanCompleteEventArgs e);
         public event SiteScanCompleteEventHandle SiteScanComplete;
 
-        public class SiteScanCompleteEventArgs : EventArgs
+        public class ScanCompleteEventArgs : EventArgs
         {
             public Web web;
             public readonly List<Page> pages;
-            public SiteScanCompleteEventArgs(List<Page> pages, Web web)
+            public ScanCompleteEventArgs(List<Page> pages, Web web)
             {
                 this.web = web;
                 this.pages = pages;
             }
         }
 
-        public virtual void OnSiteScanComplete(SiteScanCompleteEventArgs e)
+        public virtual void OnSiteScanComplete(ScanCompleteEventArgs e)
         {
             if (SiteScanComplete != null)
             {
@@ -116,24 +116,10 @@ namespace Leo2.Rule
         public List<Page> Pages { get; set; }           // 当前的页面数
         protected XPCollection<Page> ExistPages { get; set; }  // 已经搜索到的页面
 
+        
+        protected Web CurrentWeb { get; set; }          // 当前规则对应的Web
+
         private int m_max_page = -1;        // 记录最大的页数
-
-        // 当前规则对应的Web
-        private Web m_web;
-        protected Web CurrentWeb
-        {
-            get
-            {
-                return m_web;
-            }
-            set
-            {
-                m_web = value;
-                m_web.MaxPage = this.MaxPage;
-            }
-        } 
-  
-
         // 取得总共页数
         public int MaxPage
         {
@@ -141,7 +127,6 @@ namespace Leo2.Rule
             {
                 if (m_max_page == -1)
                     m_max_page = GetPagesCount();
-                CurrentWeb.MaxPage = m_max_page;
                 return m_max_page;
             }
         }
@@ -149,6 +134,7 @@ namespace Leo2.Rule
 
         /// <summary>
         /// 虚拟方法，用来取得最大的页数
+        /// 具体实现由子类来完成
         /// </summary>
         /// <returns></returns>
         protected virtual int GetPagesCount()
@@ -166,46 +152,45 @@ namespace Leo2.Rule
         {
             CurrentWeb = web;
             Pages = new List<Page>();
-            this.ExistPages = new XPCollection<Page>(XpoDefault.Session,
+            this.ExistPages = new XPCollection<Page>(new Session(XpoDefault.DataLayer),
                     CriteriaOperator.Parse("Parent_ID = ?", web.Oid));
 
-            // 开始下载时，自动保存    
-            this.SiteScanComplete += SavePage;      
+            // 开始下载时，自动保存  
+            this.PageScanComplete += SaveScanResult;        // 每扫描好一页就进行保存
+            //this.SiteScanComplete += SavePage;      
         }
 
-        /// 取得单网站的扫描
-        public bool SingleSiteScan(string url = "", bool search_all = false)
+        /// 准备开始扫描
+        public bool PrepareScan(bool search_all = false)
         {
-            // 如果下载的地址为空的话就取WEB的地址（第一次调用不用加的）
-            if (string.IsNullOrEmpty(url))
-                url = CurrentWeb.URL;
-
             // 触发开始扫描事件
             SiteScanBeginEventArgs e1 = new SiteScanBeginEventArgs(CurrentWeb);
             OnSiteScanBegin(e1);
 
-            return NextPageScan(url, search_all);
+            // 正式扫描
+            return ScaningListPage(CurrentWeb.URL, search_all);
         }
 
-        private bool NextPageScan(string url, bool search_all)
-        {
-            // 下载该列表下的page联接
-            GetPagesOnList(url);
+        private bool ScaningListPage(string url, bool search_all)
+        {          
+            // 取得列表上的所有的Page
+            List<Page> list = GetPagesOnList(url);
 
-            // 触发事件
-            PageScanCompleteEventArgs e2 = new PageScanCompleteEventArgs(Pages, CurrentWeb);
+            // 触发单列表扫描完毕事件
+            ScanCompleteEventArgs e2 = new ScanCompleteEventArgs(list, CurrentWeb);
             OnPageScanComplete(e2);
 
             // 如果该栏目没有全部扫描过，就继续扫描
             if (!(search_all &&
-                NewPageInExistPages()))     // 或者新的页面没有出现在页面列表里（表明全部都是新页面，那就要扫描下一页了）
+                NewPageInExistPages(list)))     // 或者新的页面没有出现在页面列表里（表明全部都是新页面，那就要扫描下一页了）
             {
-
+                // 取得下一页 
                 string next_url = GetNextLink(url);
+
                 if (!string.IsNullOrEmpty(next_url))
                 {
                     // 如果取得下一页地址，就继续扫描
-                    return NextPageScan(next_url, search_all);
+                    return ScaningListPage(next_url, search_all);
                 }
                 else
                 {
@@ -213,15 +198,26 @@ namespace Leo2.Rule
                     if (next_url == "")     // 空 表明全部搜索过了
                     {
                         //通知已经全部下载完成了。
-                        SiteScanCompleteEventArgs e3 = new SiteScanCompleteEventArgs(Pages,CurrentWeb);
+                        ScanCompleteEventArgs e3 = new ScanCompleteEventArgs(new List<Page>(), CurrentWeb);
                         OnSiteScanComplete(e3);
 
                         return true;
                     }
                     else
+                    {
+                        //也要通知已经下载结束了了。
+                        ScanCompleteEventArgs e4 = new ScanCompleteEventArgs(null, CurrentWeb);
+                        OnSiteScanComplete(e4);
+
                         return false;
+                    }
                 }
             }
+
+            //也要通知已经下载结束了了。
+            ScanCompleteEventArgs e5 = new ScanCompleteEventArgs(null, CurrentWeb);
+            OnSiteScanComplete(e5);
+
             return false;
         }
 
@@ -231,18 +227,26 @@ namespace Leo2.Rule
         /// <summary>
         /// 判断新取得的页面是否在新页面列表里存在
         /// </summary>
-        /// <returns>存在，返回址，不存在，返回假</returns>
-        private bool NewPageInExistPages()
+        /// <returns>存在，返回真，不存在，返回假</returns>
+        private bool NewPageInExistPages(List<Page> list)
         {
-            foreach (Page page in Pages)
+            if (list.Count() <= 0)
+                return false;
+
+            List<string> filter = new List<string>();
+
+            // 生成过滤条件
+            foreach (Page page in list)
             {
-                var fp = from p in ExistPages
-                         where p.URL == page.URL
-                         select p;
-                if (fp.Count() > 0)
-                    return true;
+                filter.Add(page.URL);
             }
-            return false;
+
+            XPCollection<Page> pages = new XPCollection<Page>( new Session(XpoDefault.DataLayer),
+                new InOperator("URL", filter.ToArray()));
+            if(pages.Count() > 0)
+                return true;
+            else
+                return false;
         }
 
 
@@ -253,20 +257,27 @@ namespace Leo2.Rule
         /// <param name="web"></param>
         /// <param name="list_url"></param>
         /// <returns>正常返回为真，读取网页内容出错，则为假</returns>
-        public bool GetPagesOnList(string list_url)
+        public List<Page> GetPagesOnList(string list_url)
         {
+            // 定义一个Session,仅为初始化Page实例而用
+            Session session = new Session(XpoDefault.DataLayer);
+            List<Page> list = new List<Page>();
+
             // 取得列表面的内容
             HtmlDocument doc = WebHelper.GetHtmlDocument(list_url);
-            if (doc == null)
-                return false;
 
+            // 如果没有取到内容，返回空列表
+            if (doc == null) 
+                return list;
+
+            // 分析里面的结点
             HtmlNodeCollection lists = doc.DocumentNode.SelectNodes(this.List_XPath);
 
-            // 取所有的页面结点
+            // 取所有符合要求的结点
             foreach (HtmlNode node in lists)
             {
                 // 生成一个新的page实例 
-                Page page = new Page();
+                Page page = new Page(session);
 
                 // 取得联接
                 page.URL = GeneRightURL(node.Attributes["href"].Value);
@@ -277,9 +288,9 @@ namespace Leo2.Rule
                 else
                     page.Title = node.InnerText;
 
-                Pages.Add(page);      // 加入查到的页面结点
+                list.Add(page);      // 加入查到的页面结点
             }
-            return true;
+            return list;
         }
 
 
@@ -308,7 +319,7 @@ namespace Leo2.Rule
                         return GeneRightURL(node.Attributes["href"].Value);
                 }
             }
-            return "";
+            return "";      // 没有找到下一页，说明结束了
         }
 
 
@@ -359,17 +370,20 @@ namespace Leo2.Rule
 
 
         // 保存所有扫描出来的页面到数据库里面
-        protected void SavePage(object sender, BaseRule.SiteScanCompleteEventArgs e)
+        protected void SaveScanResult(object sender, BaseRule.ScanCompleteEventArgs e)
         {
-            using (UnitOfWork uow = new UnitOfWork())       // 开始事务
+            // 同一时间只能一个线程保存数据
+            System.Threading.Mutex m = new System.Threading.Mutex(false, "SaveScanResult");
+            m.WaitOne();
+            using (UnitOfWork uow = new UnitOfWork(Leo2.Controller.LeoController.GetThreadSafeDataLayer()))       // 开始事务
             {
+                uow.BeginTransaction();
                 //  对于每个取得的新页面，判断是否已经存在，如果不存在就保存
                 foreach (Page page in e.pages)      
                 {
-                    var fp = from p in ExistPages
-                             where p.URL == page.URL
-                             select p;
-                    if (fp.Count() == 0)
+                    XPCollection<Page> pages = new XPCollection<Page>(new Session(XpoDefault.DataLayer),
+                        CriteriaOperator.Parse("URL = ?", page.URL));
+                    if (pages.Count() == 0)
                     {
                         Page newPage = new Page(uow) { Parent_ID = CurrentWeb.Oid, Title = page.Title, URL = page.URL };
                         newPage.Save();
@@ -377,6 +391,8 @@ namespace Leo2.Rule
                 }
                 uow.CommitChanges();
             }
+
+            m.ReleaseMutex();
         }
 
         #region 页面下载的处理函数
@@ -389,20 +405,21 @@ namespace Leo2.Rule
         /// <param name="p"></param>
         public string GetSingleContentWithSave(Page p)
         {
-            XPCollection<Web> list = new XPCollection<Web>(
-                CriteriaOperator.Parse("Oid = ?", p.Parent_ID));
-
             // 如果没有取得Page就退出
-            if (list.Count() > 0)
+            if (p.ParentWeb != null)
             {
-                HtmlDocument doc = WebHelper.GetHtmlDocument(p.URL, list[0].Encoding);
+                HtmlDocument doc = WebHelper.GetHtmlDocument(p.URL, p.ParentWeb.Encoding);
                 HtmlNodeCollection firstpage = doc.DocumentNode.SelectNodes(Page_XPath);
-
-                if (firstpage != null && firstpage.Count >= 1)
+                using (UnitOfWork uow = new UnitOfWork(XpoDefault.DataLayer))
                 {
-                    p.CDate = GetDataFromContent(doc.DocumentNode.InnerHtml);
-                    p.Is_Down = SaveContentToFile(p, firstpage[0].InnerHtml);
-                    p.Save();
+                    Page page = uow.GetObjectByKey<Page>(p.Oid);
+                    if (firstpage != null && firstpage.Count >= 1)
+                    {
+                        page.CDate = GetDataFromContent(doc.DocumentNode.InnerHtml);
+                        page.Is_Down = SaveContentToFile(p, firstpage[0].InnerHtml);
+                        page.Save();
+                    }
+                    uow.CommitChanges();
                     return firstpage[0].InnerHtml;
                 }
             }

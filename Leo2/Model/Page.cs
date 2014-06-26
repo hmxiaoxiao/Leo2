@@ -92,14 +92,14 @@ a:visited {text-decoration: none}
         private string m_content;
 
 
-        public Page() : base(XpoDefault.Session) { }
+        //public Page() : base(XpoDefault.DataLayer) { }
         public Page(Session session) : base(session) { }
-        public Page(Session session, int parent_id, string url)
-            : base(session)
-        {
-            m_parent_id = parent_id;
-            m_url = url;
-        }
+        //public Page(Session session, int parent_id, string url)
+        //    : base(session)
+        //{
+        //    m_parent_id = parent_id;
+        //    m_url = url;
+        //}
 
         /// <summary>
         /// 网页的标题
@@ -188,7 +188,7 @@ a:visited {text-decoration: none}
             {
                 if(m_parentweb == null)
                 {
-                    XPCollection<Web> webs = new XPCollection<Web>(
+                    XPCollection<Web> webs = new XPCollection<Web>(new Session(XpoDefault.DataLayer),
                         CriteriaOperator.Parse("Oid = ?", this.m_parent_id));
                     if (webs.Count > 0)
                         m_parentweb = webs[0];
@@ -220,11 +220,7 @@ a:visited {text-decoration: none}
             //如果没有找到文件，就先下载
             if (!File.Exists(filename))
             {
-                XPCollection<Web> webs = new XPCollection<Web>(
-                    CriteriaOperator.Parse("Oid = ?", page.Parent_ID));
-                if (webs.Count() <= 0)
-                    return "";
-                Leo2.Rule.BaseRule br = webs[0].Rule;
+                Leo2.Rule.BaseRule br = page.ParentWeb.Rule;
                 if (br == null)
                     return "";
 
