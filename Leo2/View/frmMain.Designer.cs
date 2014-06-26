@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition styleFormatCondition1 = new DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition();
+            DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition styleFormatCondition3 = new DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
-            DevExpress.XtraGrid.StyleFormatCondition styleFormatCondition2 = new DevExpress.XtraGrid.StyleFormatCondition();
+            DevExpress.XtraGrid.StyleFormatCondition styleFormatCondition4 = new DevExpress.XtraGrid.StyleFormatCondition();
             this.treeUnread = new DevExpress.XtraTreeList.Columns.TreeListColumn();
             this.gridIsRead = new DevExpress.XtraGrid.Columns.GridColumn();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -58,6 +58,7 @@
             this.bar1 = new DevExpress.XtraBars.Bar();
             this.btnUpdateAll = new DevExpress.XtraBars.BarButtonItem();
             this.btnUpdate = new DevExpress.XtraBars.BarButtonItem();
+            this.btnDownload = new DevExpress.XtraBars.BarButtonItem();
             this.bar2 = new DevExpress.XtraBars.Bar();
             this.beiStatus = new DevExpress.XtraBars.BarStaticItem();
             this.beiProcess = new DevExpress.XtraBars.BarEditItem();
@@ -74,7 +75,7 @@
             this.barStaticItem1 = new DevExpress.XtraBars.BarStaticItem();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.popupMenu1 = new DevExpress.XtraBars.PopupMenu(this.components);
-            this.btnDownload = new DevExpress.XtraBars.BarButtonItem();
+            this.beiPageStatus = new DevExpress.XtraBars.BarStaticItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -140,14 +141,14 @@
             this.treeUnread,
             this.treeTitle});
             this.treeList1.Dock = System.Windows.Forms.DockStyle.Fill;
-            styleFormatCondition1.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            styleFormatCondition1.Appearance.Options.UseFont = true;
-            styleFormatCondition1.ApplyToRow = true;
-            styleFormatCondition1.Column = this.treeUnread;
-            styleFormatCondition1.Condition = DevExpress.XtraGrid.FormatConditionEnum.Greater;
-            styleFormatCondition1.Value1 = ((long)(0));
+            styleFormatCondition3.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            styleFormatCondition3.Appearance.Options.UseFont = true;
+            styleFormatCondition3.ApplyToRow = true;
+            styleFormatCondition3.Column = this.treeUnread;
+            styleFormatCondition3.Condition = DevExpress.XtraGrid.FormatConditionEnum.Greater;
+            styleFormatCondition3.Value1 = ((long)(0));
             this.treeList1.FormatConditions.AddRange(new DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition[] {
-            styleFormatCondition1});
+            styleFormatCondition3});
             this.treeList1.Location = new System.Drawing.Point(0, 0);
             this.treeList1.Name = "treeList1";
             this.treeList1.BeginUnboundLoad();
@@ -304,14 +305,14 @@
             this.gridIsRead,
             this.gridOid,
             this.gridParentID});
-            styleFormatCondition2.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            styleFormatCondition2.Appearance.Options.UseFont = true;
-            styleFormatCondition2.ApplyToRow = true;
-            styleFormatCondition2.Column = this.gridIsRead;
-            styleFormatCondition2.Condition = DevExpress.XtraGrid.FormatConditionEnum.Equal;
-            styleFormatCondition2.Value1 = false;
+            styleFormatCondition4.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            styleFormatCondition4.Appearance.Options.UseFont = true;
+            styleFormatCondition4.ApplyToRow = true;
+            styleFormatCondition4.Column = this.gridIsRead;
+            styleFormatCondition4.Condition = DevExpress.XtraGrid.FormatConditionEnum.Equal;
+            styleFormatCondition4.Value1 = false;
             this.gridView1.FormatConditions.AddRange(new DevExpress.XtraGrid.StyleFormatCondition[] {
-            styleFormatCondition2});
+            styleFormatCondition4});
             this.gridView1.GridControl = this.gridControl1;
             this.gridView1.Name = "gridView1";
             this.gridView1.OptionsBehavior.Editable = false;
@@ -376,8 +377,9 @@
             this.beiStatus,
             this.barListItem1,
             this.barStaticItem1,
-            this.btnDownload});
-            this.barManager1.MaxItemId = 17;
+            this.btnDownload,
+            this.beiPageStatus});
+            this.barManager1.MaxItemId = 18;
             this.barManager1.RepositoryItems.AddRange(new DevExpress.XtraEditors.Repository.RepositoryItem[] {
             this.repositoryItemProgressBar1});
             this.barManager1.StatusBar = this.bar2;
@@ -414,6 +416,15 @@
             this.btnUpdate.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnUpdate.LargeGlyph")));
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnUpdate_ItemClick);
+            // 
+            // btnDownload
+            // 
+            this.btnDownload.Caption = "下载";
+            this.btnDownload.Glyph = ((System.Drawing.Image)(resources.GetObject("btnDownload.Glyph")));
+            this.btnDownload.Id = 16;
+            this.btnDownload.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnDownload.LargeGlyph")));
+            this.btnDownload.Name = "btnDownload";
+            this.btnDownload.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnDownload_ItemClick);
             // 
             // bar2
             // 
@@ -543,14 +554,12 @@
             this.popupMenu1.Manager = this.barManager1;
             this.popupMenu1.Name = "popupMenu1";
             // 
-            // btnDownload
+            // beiPageStatus
             // 
-            this.btnDownload.Caption = "下载";
-            this.btnDownload.Glyph = ((System.Drawing.Image)(resources.GetObject("btnDownload.Glyph")));
-            this.btnDownload.Id = 16;
-            this.btnDownload.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("btnDownload.LargeGlyph")));
-            this.btnDownload.Name = "btnDownload";
-            this.btnDownload.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnDownload_ItemClick);
+            this.beiPageStatus.Caption = "barStaticItem2";
+            this.beiPageStatus.Id = 17;
+            this.beiPageStatus.Name = "beiPageStatus";
+            this.beiPageStatus.TextAlignment = System.Drawing.StringAlignment.Near;
             // 
             // frmMain
             // 
@@ -632,5 +641,6 @@
         private DevExpress.XtraBars.BarStaticItem barStaticItem1;
         private DevExpress.XtraBars.BarListItem barListItem1;
         private DevExpress.XtraBars.BarButtonItem btnDownload;
+        private DevExpress.XtraBars.BarStaticItem beiPageStatus;
     }
 }

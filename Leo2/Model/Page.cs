@@ -91,6 +91,7 @@ a:visited {text-decoration: none}
         private string m_url;
         private string m_content;
 
+
         public Page() : base(XpoDefault.Session) { }
         public Page(Session session) : base(session) { }
         public Page(Session session, int parent_id, string url)
@@ -179,6 +180,22 @@ a:visited {text-decoration: none}
             this.Save();
         }
 
+        private Web m_parentweb = null;
+        // 取得当前网页的WEB
+        public Web ParentWeb
+        {
+            get
+            {
+                if(m_parentweb == null)
+                {
+                    XPCollection<Web> webs = new XPCollection<Web>(
+                        CriteriaOperator.Parse("Oid = ?", this.m_parent_id));
+                    if (webs.Count > 0)
+                        m_parentweb = webs[0];
+                }
+                return m_parentweb;
+            }
+        }
 
         /// <summary>
         /// 加上模板的显示状态
@@ -203,12 +220,11 @@ a:visited {text-decoration: none}
             //如果没有找到文件，就先下载
             if (!File.Exists(filename))
             {
-                // TODO 要通过下载规则下载
                 XPCollection<Web> webs = new XPCollection<Web>(
                     CriteriaOperator.Parse("Oid = ?", page.Parent_ID));
                 if (webs.Count() <= 0)
                     return "";
-                Leo2.Rule.BaseRule br = Leo2.Controller.LeoController.GetRuleFromWeb(webs[0]);
+                Leo2.Rule.BaseRule br = webs[0].Rule;
                 if (br == null)
                     return "";
 
@@ -250,39 +266,5 @@ a:visited {text-decoration: none}
 
             return string.Format(@"{0}\{1}.html", dir, page.Oid);// +@"\Content.html";
         }
-
-        ///// <summary>
-        ///// 根据ID创建对象。
-        ///// </summary>
-        ///// <param name="page_oid"></param>
-        ///// <returns></returns>
-        //public static Page CreatePageWithOID(int page_oid)
-        //{
-        //    XPCollection<Page> pages = new XPCollection<Page>(XpoDefault.Session,
-        //        Page.Fields.Oid == page_oid);
-        //    if (pages.Count> 0)
-        //        return pages[0];
-        //    else
-        //        return null;
-        //}
-
-
-
-        /// <summary>
-        /// 这个内部类是用来做查询的时候用的。
-        ///// </summary>
-        //public new class Fields
-        //{
-        //    private Fields() { }
-        //    public static OperandProperty Parent_ID
-        //    {
-        //        get { return new OperandProperty("Parent_ID"); }
-        //    }
-
-        //    public static OperandParameter Oid
-        //    {
-        //        get { return new OperandParameter("Oid"); }
-        //    }
-        //}
     }
 }

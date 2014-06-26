@@ -166,7 +166,6 @@ namespace Leo2.Rule
         {
             CurrentWeb = web;
             Pages = new List<Page>();
-            CurrentWeb.MaxPage = MaxPage;        // 计算一下页面总数
             this.ExistPages = new XPCollection<Page>(XpoDefault.Session,
                     CriteriaOperator.Parse("Parent_ID = ?", web.Oid));
 
@@ -381,6 +380,8 @@ namespace Leo2.Rule
         }
 
         #region 页面下载的处理函数
+
+
 
         /// <summary>
         /// 下载指定网页的内容

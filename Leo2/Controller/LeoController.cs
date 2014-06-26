@@ -144,25 +144,50 @@ namespace Leo2.Controller
             //Web.AddData();
         }
 
-        // 根据名称建立对应的规则类，如果对应的规则类没有撰写就返回NULL
-        public static BaseRule GetRuleFromWeb(Web web)
+        #region  Page下载结束事件
+        public delegate void PageDownloadCompleteHandler(object sender, PageDownloadCompleteEventArgs e);
+        public event PageDownloadCompleteHandler PageDownloadComplete;
+        public class PageDownloadCompleteEventArgs : EventArgs
         {
-            Uri uri = new Uri(web.URL);
-            string classname = "Leo2.Rule." + uri.Authority.Replace('.', '_');
-
-            Type type = Type.GetType(classname);
-            if (type == null)        // 如果找不到类型，就返回NULL
-                return null;
-            else
+            public readonly Page page;
+            public PageDownloadCompleteEventArgs(Page page)
             {
-                object[] parameters = new object[1];
-                parameters[0] = web;
-
-                object obj = Activator.CreateInstance(type, parameters);
-                return (BaseRule)obj;
+                this.page = page;
             }
         }
+        public virtual void OnPageDownloadComplete(PageDownloadCompleteEventArgs e)
+        {
+            if (PageDownloadComplete != null)
+            {
+                Delegate[] delArray = PageDownloadComplete.GetInvocationList();
 
+                foreach (Delegate del in delArray)
+                {
+                    PageDownloadCompleteHandler method = (PageDownloadCompleteHandler)del;
+                    method.BeginInvoke(this, e, null, null);
+                }
+            }
+        }
+        #endregion
+
+        #region  Page线程结束
+        public delegate void AllPageDownloadCompleteHandler(object sender, EventArgs e);
+        public event AllPageDownloadCompleteHandler AllPageDownloadComplete;
+
+        public virtual void OnAllPageDownloadComplete(EventArgs e)
+        {
+            if (AllPageDownloadComplete != null)
+            {
+                Delegate[] delArray = AllPageDownloadComplete.GetInvocationList();
+
+                foreach (Delegate del in delArray)
+                {
+                    AllPageDownloadCompleteHandler method = (AllPageDownloadCompleteHandler)del;
+                    method.BeginInvoke(this, e, null, null);
+                }
+            }
+        }
+        #endregion
 
         // 批量下载所有的page的内容
         public bool DownloadPageContent(CancellationToken ct)
@@ -171,11 +196,20 @@ namespace Leo2.Controller
             foreach(Page p in pages)
             {
                 if (ct.IsCancellationRequested)
+                {
+                    OnAllPageDownloadComplete(new EventArgs());     // 通知下载结束
                     return false;       // 被取消后的退出
-                //else
-                    // TODO 这里需要跟踪处理
-                    // PageHelper.GetSingleContentWithSave(p);
+                }
+                else
+                {
+                    p.ParentWeb.Rule.GetSingleContentWithSave(p);
+
+                    // 发出下载完成事件
+                    PageDownloadCompleteEventArgs e = new PageDownloadCompleteEventArgs(p);
+                    OnPageDownloadComplete(e);
+                }
             }
+            OnAllPageDownloadComplete(new EventArgs());     // 通知下载结束
             return true;            // 下载完成后退出
         }
 

@@ -5,7 +5,7 @@ using System.Text;
 
 using DevExpress.Xpo;
 using DevExpress.Data.Filtering;
-
+using Leo2.Rule;
 
 namespace Leo2.Model
 {
@@ -130,6 +130,37 @@ namespace Leo2.Model
         {
             get { return m_encoding; }
             set { SetPropertyValue<string>("Encoding", ref m_encoding, value); }
+        }
+
+        // 本网站的规则
+        private BaseRule m_rule = null;
+        public BaseRule Rule
+        {
+            get 
+            {
+                if (m_rule == null)
+                    m_rule = GetRuleFromWeb();
+                return m_rule;
+            }
+        }
+
+        // 根据名称建立对应的规则类，如果对应的规则类没有撰写就返回NULL
+        private BaseRule GetRuleFromWeb()
+        {
+            Uri uri = new Uri(URL);
+            string classname = "Leo2.Rule." + uri.Authority.Replace('.', '_');
+
+            Type type = Type.GetType(classname);
+            if (type == null)        // 如果找不到类型，就返回NULL
+                return null;
+            else
+            {
+                object[] parameters = new object[1];
+                parameters[0] = this;
+
+                object obj = Activator.CreateInstance(type, parameters);
+                return (BaseRule)obj;
+            }
         }
 
 

@@ -29,9 +29,7 @@ namespace Leo2.View
         private int m_current_web_oid = -1;         // 当前列表显示的ID值
         private XPCollection<Web> m_webs;
         private XPCollection<Page> m_pages;
-
-        //private BaseRule m_rule;                 // 下载列表页面的规则
-        private Task m_task = null;            // Web下载的线程
+        private Task m_task = null;            // Web扫描的线程
 
         // 构造函数，初始化必要的数据
         public frmMain(LeoController controller)
@@ -92,6 +90,8 @@ namespace Leo2.View
         // 下载所有的内容 
         private void btnDownload_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
+            if (!CheckTask()) return;
+
             DownloadPageContent();
         }
 
@@ -117,12 +117,9 @@ namespace Leo2.View
         // 全部更新
         private void btnUpdateAll_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
         {
-            // 如果正在下载，就不下载了。
-            if (m_task != null)
-            {
-                MessageBox.Show("当前正在下载，请等下载完后，再进行类似的操作!", "注意", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            // 如果正在扫描，就不扫描了。
+            if (!CheckTask())
                 return;
-            }
 
             this.Cursor = Cursors.WaitCursor;   // 设置忙光标
 
@@ -144,7 +141,7 @@ namespace Leo2.View
         {
             Web web = GetNextWeb();
             if (web != null)
-                m_task = Task.Factory.StartNew(() => StartBatchScan(LeoController.GetRuleFromWeb(web)));
+                m_task = Task.Factory.StartNew(() => StartBatchScan(web.Rule));
             else
             {
                 MessageBox.Show("全部更新完成!", "注意", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -152,7 +149,7 @@ namespace Leo2.View
             }
         }
 
-        // 开始下载列表页中的所有的内容
+        // 开始扫描列表页中的所有的内容
         private void StartBatchScan(BaseRule rule)
         {
             rule.SiteScanBegin += ShowBeginScan;
@@ -162,7 +159,7 @@ namespace Leo2.View
         }
 
 
-        // 下载完成后的显示处理
+        // 扫描完成后的显示处理
         private void ShowBatchCompleteInfo(object sender, BaseRule.SiteScanCompleteEventArgs e)
         {
             if (this.InvokeRequired)
@@ -172,7 +169,7 @@ namespace Leo2.View
             else
             {
                 beiProcess.Visibility = DevExpress.XtraBars.BarItemVisibility.Never;    // 不显示进度条
-                beiStatus.Caption = string.Format(@"[{0}]下载完成！", e.web.Name);
+                beiStatus.Caption = string.Format(@"[{0}]扫描完成！", e.web.Name);
                 //ShowPageList(true);         // 刷新一下结点
                 m_task = null;        // 清空线程 
                 Task.Factory.StartNew(() => BatchStartSingleScan());    // 扫描下一个
@@ -186,17 +183,23 @@ namespace Leo2.View
             BeginWebDownload();
         }
 
+        private bool CheckTask()
+        {
+            if (m_task != null)
+            {
+                MessageBox.Show("当前正在扫描，请等扫描完后，再进行类似的操作!", "注意", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            return true;
+        }
+
 
 
         // 开始扫描页面
         private void BeginWebDownload()
         {
-            // 如果正在下载，就不下载了。
-            if (m_task != null)
-            {
-                MessageBox.Show("当前正在下载，请等下载完后，再进行类似的操作!", "注意", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            // 如果正在扫描，就不扫描了。
+            if (!CheckTask()) return;
 
             this.Cursor = Cursors.WaitCursor;   // 设置忙光标
 
@@ -208,12 +211,12 @@ namespace Leo2.View
             Web current_web = webs[0];
 
             // 取得对应的规则
-            BaseRule br = LeoController.GetRuleFromWeb(current_web);
+            BaseRule br = current_web.Rule;
 
             // 如果规则没有取到，就提示尚未完成，不再继续
             if (br == null)
             {
-                MessageBox.Show("该下载规则还没有完成，暂不能使用!", "注意", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("该扫描规则还没有完成，暂不能使用!", "注意", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             else
             {
@@ -226,7 +229,7 @@ namespace Leo2.View
             this.Cursor = Cursors.Default;      // 光标恢复正常
         }
 
-        // 开始下载列表页中的所有的内容
+        // 开始扫描列表页中内容
         private void StartSingleScan(BaseRule rule)
         {
             rule.SiteScanBegin += ShowBeginScan;
@@ -252,14 +255,14 @@ namespace Leo2.View
                 this.repositoryItemProgressBar1.Maximum = e.web.MaxPage;
 
                 // 初始化显示内容
-                beiStatus.Caption = string.Format(@"[{0}]开始准备下载...", e.web.Name);
+                beiStatus.Caption = string.Format(@"[{0}]开始准备扫描...", e.web.Name);
                 beiProcess.EditValue = 0;
             }
         }
 
-        
 
-        // 显示下载的进度
+
+        // 显示扫描的进度
         private void ShowProcess(object sender, BaseRule.PageScanCompleteEventArgs e)
         {
             if (this.InvokeRequired)
@@ -270,11 +273,11 @@ namespace Leo2.View
             {
                 int process = int.Parse(beiProcess.EditValue.ToString());
                 beiProcess.EditValue = (++process);
-                beiStatus.Caption = string.Format(@"[{2}]正在下载...,一共{0}页, {1}页已扫描.", e.web.MaxPage, process, e.web.Name);
+                beiStatus.Caption = string.Format(@"[{2}]正在扫描...,一共{0}页, {1}页已扫描.", e.web.MaxPage, process, e.web.Name);
             }
         }
 
-        // 下载完成后的显示处理
+        // 扫描完成后的显示处理
         private void ShowCompleteInfo(object sender, BaseRule.SiteScanCompleteEventArgs e)
         {
             if (this.InvokeRequired)
@@ -284,7 +287,7 @@ namespace Leo2.View
             else
             {
                 beiProcess.Visibility = DevExpress.XtraBars.BarItemVisibility.Never;    // 不显示进度条
-                beiStatus.Caption = string.Format(@"[{0}]下载完成！", e.web.Name);
+                beiStatus.Caption = string.Format(@"[{0}]扫描完成！", e.web.Name);
                 ShowPageList(true);         // 刷新一下结点
                 m_task = null;        // 清空线程 
             }
@@ -309,14 +312,43 @@ namespace Leo2.View
         CancellationTokenSource cts = null;
         private void DownloadPageContent()
         {
+            // 显示下载信息
+            beiStatus.Visibility = DevExpress.XtraBars.BarItemVisibility.Always;
+
             if(cts != null)
                 cts.Cancel();        // 取消过去的任务
 
             cts = new CancellationTokenSource();
-
+            m_controller.PageDownloadComplete += ShowPageDownloadComplete;
+            m_controller.AllPageDownloadComplete += AllPageDownComplete;
             Task<bool> t = new Task<bool>(() => m_controller.DownloadPageContent(cts.Token), cts.Token);
             t.Start();
         }
+
+        private void ShowPageDownloadComplete(object sender, LeoController.PageDownloadCompleteEventArgs e)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new LeoController.PageDownloadCompleteHandler(ShowPageDownloadComplete), new object[] { null, e });
+            }
+            else
+            {
+                beiStatus.Caption = string.Format(@"[{0}-{1}]下载完成！", e.page.ParentWeb.Name, e.page.Title);
+            }
+        }
+
+        private void AllPageDownComplete(object sender, EventArgs e)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new LeoController.AllPageDownloadCompleteHandler(AllPageDownComplete), new object[] { null, e });
+            }
+            else
+            {
+                beiStatus.Visibility = DevExpress.XtraBars.BarItemVisibility.Never;
+            }
+        }
+
 
         /// <summary>
         /// 显示树结点对应的所有的网页列表
