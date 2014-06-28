@@ -428,11 +428,37 @@ namespace Leo2.Rule
 
             if (firstpage != null && firstpage.Count >= 1)
             {
-                return firstpage[0].InnerHtml;
+                return FilterImage(firstpage[0]);
             }
             return "";
         }
 
+        private string FilterImage(HtmlNode node)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(node.InnerHtml);
+            HtmlNodeCollection nc = doc.DocumentNode.SelectNodes("//img");
+            foreach(HtmlNode n in nc)
+            {
+                //string src = GetRightImageURL(n.Attributes["src"].ToString());
+                //HtmlAttribute attr = new HtmlAttribute();
+                n.Attributes["src"].Value = GetRightImageURL(n.Attributes["src"].Value);
+            }
+
+            return doc.DocumentNode.InnerHtml;
+        }
+
+
+        protected string GetRightImageURL(string url)
+        {
+            Uri u = new Uri(this.CurrentWeb.URL);
+            string web_root = "http://" + u.Authority;
+
+            if (url.Substring(0, 1) == "/")        // 如果地址是以"/"开头，说明用的是相对地址，要加上网址
+                return web_root + url;
+            else
+                return url;
+        }
 
 
         /// 根据网页的内容取得该网页的发布日期
