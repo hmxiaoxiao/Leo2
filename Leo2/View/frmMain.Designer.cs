@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition styleFormatCondition3 = new DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition();
+            DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition styleFormatCondition1 = new DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
-            DevExpress.XtraGrid.StyleFormatCondition styleFormatCondition4 = new DevExpress.XtraGrid.StyleFormatCondition();
+            DevExpress.XtraGrid.StyleFormatCondition styleFormatCondition2 = new DevExpress.XtraGrid.StyleFormatCondition();
             this.treeUnread = new DevExpress.XtraTreeList.Columns.TreeListColumn();
             this.gridIsRead = new DevExpress.XtraGrid.Columns.GridColumn();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -73,9 +73,9 @@
             this.btnForceUpdate = new DevExpress.XtraBars.BarButtonItem();
             this.barListItem1 = new DevExpress.XtraBars.BarListItem();
             this.barStaticItem1 = new DevExpress.XtraBars.BarStaticItem();
+            this.beiPageStatus = new DevExpress.XtraBars.BarStaticItem();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
             this.popupMenu1 = new DevExpress.XtraBars.PopupMenu(this.components);
-            this.beiPageStatus = new DevExpress.XtraBars.BarStaticItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -141,14 +141,14 @@
             this.treeUnread,
             this.treeTitle});
             this.treeList1.Dock = System.Windows.Forms.DockStyle.Fill;
-            styleFormatCondition3.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            styleFormatCondition3.Appearance.Options.UseFont = true;
-            styleFormatCondition3.ApplyToRow = true;
-            styleFormatCondition3.Column = this.treeUnread;
-            styleFormatCondition3.Condition = DevExpress.XtraGrid.FormatConditionEnum.Greater;
-            styleFormatCondition3.Value1 = ((long)(0));
+            styleFormatCondition1.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            styleFormatCondition1.Appearance.Options.UseFont = true;
+            styleFormatCondition1.ApplyToRow = true;
+            styleFormatCondition1.Column = this.treeUnread;
+            styleFormatCondition1.Condition = DevExpress.XtraGrid.FormatConditionEnum.Greater;
+            styleFormatCondition1.Value1 = ((long)(0));
             this.treeList1.FormatConditions.AddRange(new DevExpress.XtraTreeList.StyleFormatConditions.StyleFormatCondition[] {
-            styleFormatCondition3});
+            styleFormatCondition1});
             this.treeList1.Location = new System.Drawing.Point(0, 0);
             this.treeList1.Name = "treeList1";
             this.treeList1.BeginUnboundLoad();
@@ -305,18 +305,21 @@
             this.gridIsRead,
             this.gridOid,
             this.gridParentID});
-            styleFormatCondition4.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            styleFormatCondition4.Appearance.Options.UseFont = true;
-            styleFormatCondition4.ApplyToRow = true;
-            styleFormatCondition4.Column = this.gridIsRead;
-            styleFormatCondition4.Condition = DevExpress.XtraGrid.FormatConditionEnum.Equal;
-            styleFormatCondition4.Value1 = false;
+            styleFormatCondition2.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            styleFormatCondition2.Appearance.Options.UseFont = true;
+            styleFormatCondition2.ApplyToRow = true;
+            styleFormatCondition2.Column = this.gridIsRead;
+            styleFormatCondition2.Condition = DevExpress.XtraGrid.FormatConditionEnum.Equal;
+            styleFormatCondition2.Value1 = false;
             this.gridView1.FormatConditions.AddRange(new DevExpress.XtraGrid.StyleFormatCondition[] {
-            styleFormatCondition4});
+            styleFormatCondition2});
             this.gridView1.GridControl = this.gridControl1;
             this.gridView1.Name = "gridView1";
             this.gridView1.OptionsBehavior.Editable = false;
             this.gridView1.OptionsBehavior.EditorShowMode = DevExpress.Utils.EditorShowMode.Click;
+            this.gridView1.OptionsDetail.EnableMasterViewMode = false;
+            this.gridView1.OptionsDetail.ShowDetailTabs = false;
+            this.gridView1.OptionsDetail.SmartDetailExpand = false;
             this.gridView1.OptionsSelection.MultiSelect = true;
             this.gridView1.OptionsView.EnableAppearanceEvenRow = true;
             this.gridView1.OptionsView.ShowGroupPanel = false;
@@ -535,6 +538,13 @@
             this.barStaticItem1.Name = "barStaticItem1";
             this.barStaticItem1.TextAlignment = System.Drawing.StringAlignment.Near;
             // 
+            // beiPageStatus
+            // 
+            this.beiPageStatus.Caption = "barStaticItem2";
+            this.beiPageStatus.Id = 17;
+            this.beiPageStatus.Name = "beiPageStatus";
+            this.beiPageStatus.TextAlignment = System.Drawing.StringAlignment.Near;
+            // 
             // webBrowser1
             // 
             this.webBrowser1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -553,13 +563,6 @@
             new DevExpress.XtraBars.LinkPersistInfo(this.btnForceUpdate)});
             this.popupMenu1.Manager = this.barManager1;
             this.popupMenu1.Name = "popupMenu1";
-            // 
-            // beiPageStatus
-            // 
-            this.beiPageStatus.Caption = "barStaticItem2";
-            this.beiPageStatus.Id = 17;
-            this.beiPageStatus.Name = "beiPageStatus";
-            this.beiPageStatus.TextAlignment = System.Drawing.StringAlignment.Near;
             // 
             // frmMain
             // 

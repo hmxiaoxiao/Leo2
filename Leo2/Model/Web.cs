@@ -168,7 +168,7 @@ namespace Leo2.Model
         /// <returns></returns>
         public static Web CreateWebWithOID(int web_oid)
         {
-            XPCollection<Web> webs = new XPCollection<Web>(new Session(XpoDefault.DataLayer),
+            XPCollection<Web> webs = new XPCollection<Web>(XpoDefault.Session,
                 Web.Fields.Oid == web_oid);
             if (webs.Count > 0)
                 return webs[0];
@@ -191,7 +191,7 @@ namespace Leo2.Model
         /// </summary>
         public static void InitWebData()
         {
-            XPCollection<Web> webs = new XPCollection<Web>(new Session(XpoDefault.DataLayer));
+            XPCollection<Web> webs = new XPCollection<Web>(XpoDefault.Session);
             if (webs.Count == 0)
             {
                 using (UnitOfWork uow = new UnitOfWork(XpoDefault.DataLayer))

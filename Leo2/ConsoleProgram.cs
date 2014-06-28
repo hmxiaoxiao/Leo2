@@ -21,7 +21,7 @@ namespace Leo2.Rule
         {
             LeoController.InitDatabase();       // 初始化数据库
 
-            Web myweb = new Web(new Session(XpoDefault.DataLayer));
+            Web myweb = new Web(XpoDefault.Session);
             myweb.URL = "http://www.spacechina.com/n25/n144/n206/n214/index.html";
             m_sasac = new www_spacechina_com(myweb);
             int i = m_sasac.MaxPage;

@@ -152,7 +152,7 @@ namespace Leo2.Rule
         {
             CurrentWeb = web;
             Pages = new List<Page>();
-            this.ExistPages = new XPCollection<Page>(new Session(XpoDefault.DataLayer),
+            this.ExistPages = new XPCollection<Page>(XpoDefault.Session,
                     CriteriaOperator.Parse("Parent_ID = ?", web.Oid));
 
             // 开始下载时，自动保存  
@@ -241,7 +241,7 @@ namespace Leo2.Rule
                 filter.Add(page.URL);
             }
 
-            XPCollection<Page> pages = new XPCollection<Page>( new Session(XpoDefault.DataLayer),
+            XPCollection<Page> pages = new XPCollection<Page>(XpoDefault.Session,
                 new InOperator("URL", filter.ToArray()));
             if(pages.Count() > 0)
                 return true;
@@ -260,7 +260,7 @@ namespace Leo2.Rule
         public List<Page> GetPagesOnList(string list_url)
         {
             // 定义一个Session,仅为初始化Page实例而用
-            Session session = new Session(XpoDefault.DataLayer);
+            Session session = XpoDefault.Session;
             List<Page> list = new List<Page>();
 
             // 取得列表面的内容
@@ -365,23 +365,19 @@ namespace Leo2.Rule
             return real_next_url;
         }
 
-
-
-
-
         // 保存所有扫描出来的页面到数据库里面
         protected void SaveScanResult(object sender, BaseRule.ScanCompleteEventArgs e)
         {
             // 同一时间只能一个线程保存数据
-            System.Threading.Mutex m = new System.Threading.Mutex(false, "SaveScanResult");
+            System.Threading.Mutex m = new System.Threading.Mutex(false, "SaveDB");
             m.WaitOne();
-            using (UnitOfWork uow = new UnitOfWork(Leo2.Controller.LeoController.GetThreadSafeDataLayer()))       // 开始事务
+            using (UnitOfWork uow = new UnitOfWork(XpoDefault.DataLayer))       // 开始事务
             {
                 uow.BeginTransaction();
                 //  对于每个取得的新页面，判断是否已经存在，如果不存在就保存
                 foreach (Page page in e.pages)      
                 {
-                    XPCollection<Page> pages = new XPCollection<Page>(new Session(XpoDefault.DataLayer),
+                    XPCollection<Page> pages = new XPCollection<Page>(XpoDefault.Session,
                         CriteriaOperator.Parse("URL = ?", page.URL));
                     if (pages.Count() == 0)
                     {
@@ -398,62 +394,46 @@ namespace Leo2.Rule
         #region 页面下载的处理函数
 
 
+        public string GetPageDate(Page p)
+        {
+            // 如果没有取得Page就退出
+            if (p.ParentWeb == null)
+                return "";
+
+            HtmlDocument doc = WebHelper.GetHtmlDocument(p.URL, p.ParentWeb.Encoding);
+
+            return GetDataFromContent(doc.DocumentNode.InnerHtml);
+            //HtmlNodeCollection firstpage = doc.DocumentNode.SelectNodes(Page_XPath);
+
+            //if (firstpage != null && firstpage.Count >= 1)
+            //{
+            //    return firstpage[0].InnerHtml;
+            //}
+            //return "";
+        }
+
 
         /// <summary>
         /// 下载指定网页的内容
         /// </summary>
         /// <param name="p"></param>
-        public string GetSingleContentWithSave(Page p)
+        public string GetPageContent(Page p)
         {
             // 如果没有取得Page就退出
-            if (p.ParentWeb != null)
-            {
-                HtmlDocument doc = WebHelper.GetHtmlDocument(p.URL, p.ParentWeb.Encoding);
-                HtmlNodeCollection firstpage = doc.DocumentNode.SelectNodes(Page_XPath);
-                using (UnitOfWork uow = new UnitOfWork(XpoDefault.DataLayer))
-                {
-                    Page page = uow.GetObjectByKey<Page>(p.Oid);
-                    if (firstpage != null && firstpage.Count >= 1)
-                    {
-                        page.CDate = GetDataFromContent(doc.DocumentNode.InnerHtml);
-                        page.Is_Down = SaveContentToFile(p, firstpage[0].InnerHtml);
-                        page.Save();
-                    }
-                    uow.CommitChanges();
-                    return firstpage[0].InnerHtml;
-                }
-            }
+            if (p.ParentWeb == null)
+                return "";
 
+            HtmlDocument doc = WebHelper.GetHtmlDocument(p.URL, p.ParentWeb.Encoding);
+            HtmlNodeCollection firstpage = doc.DocumentNode.SelectNodes(Page_XPath);
+
+            if (firstpage != null && firstpage.Count >= 1)
+            {
+                return firstpage[0].InnerHtml;
+            }
             return "";
         }
 
-        /// <summary>
-        /// 把网页的内容存到文件中
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="content"></param>
-        /// <returns></returns>
-        private static bool SaveContentToFile(Page page, string content)
-        {
-            try
-            {
-                //目录结构：当前目录/content/父ID目录/当前ID.html
-                string filename = Page.GetFilePath(page);
-                using (FileStream fst = new FileStream(filename, FileMode.Append))
-                {
-                    //写数据到a.txt格式
-                    using (StreamWriter swt = new StreamWriter(fst, System.Text.Encoding.GetEncoding("utf-8")))
-                    {
-                        swt.Write(content);
-                    }
-                }
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+
 
         /// 根据网页的内容取得该网页的发布日期
         /// <summary>
@@ -461,7 +441,7 @@ namespace Leo2.Rule
         /// </summary>
         /// <param name="content"></param>
         /// <returns></returns>
-        private static string GetDataFromContent(string content)
+        private string GetDataFromContent(string content)
         {
             string cdate = "";
             cdate = Regex.Match(content, @"\d{2,4}-\d{2}-\d{2}").Value;

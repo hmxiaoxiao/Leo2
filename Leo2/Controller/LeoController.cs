@@ -49,7 +49,7 @@ namespace Leo2.Controller
         /// <returns></returns>
         public XPCollection<Web> GetAllWebs()
         {
-            return new XPCollection<Web>(new Session(XpoDefault.DataLayer));
+            return new XPCollection<Web>(XpoDefault.Session);
         }
 
 
@@ -94,37 +94,36 @@ namespace Leo2.Controller
         /// <param name="oid"></param>
         public void SetPageHasRead(int oid)
         {
-            XpoDefault.Session.BeginTransaction();      // 开始一个事务
+            // 先检查参数是否正确
+            Session session = XpoDefault.Session;
+            Page current_page = session.GetObjectByKey<Page>(oid);
+            if(current_page == null || current_page.ParentWeb == null)
+                return;
 
-            // 先更新网页的已读标志
-            XPQuery<Page> all_pages = Session.DefaultSession.Query<Page>();
-            XPQuery<Web> all_webs = Session.DefaultSession.Query<Web>();
+            // 同一时间只能一个线程保存数据
+            System.Threading.Mutex m = new System.Threading.Mutex(false, "SaveDB");
+            m.WaitOne();
 
-            var pages = from p in all_pages
-                               where p.Oid == oid
-                               select p;
-            if(pages.Count() == 1)       // 先更新page已读
+
+            // 开始事务
+            using (UnitOfWork uow = new UnitOfWork(XpoDefault.DataLayer))
             {
-                Page current_page = pages.First<Page>();
+
+                // 设置页面已读
                 current_page.Is_Read = true;
                 current_page.Save();
 
-                var webs = from w in all_webs
-                           where w.Oid == current_page.Parent_ID
-                           select w;
-                if (webs.Count() == 1)  // 再更新web的已读数量
-                {
-                    var unread_pages = from p in all_pages
-                                        where p.Parent_ID == current_page.Parent_ID && p.Is_Read == false
-                                        select p;
-                    Web current_web = webs.First();
-                    current_web.Unread = unread_pages.Count();
-                    current_web.Save();
+                // 再更新web的未读数量
+                XPCollection<Page> list = new XPCollection<Page>(XpoDefault.Session,
+                    CriteriaOperator.Parse("Parent_ID = ? and Is_Read = ?", current_page.Parent_ID, false));
+                Web web = session.GetObjectByKey<Web>(current_page.Parent_ID);
+                web.Unread = list.Count();
+                web.Save();
 
-                }
+                uow.CommitChanges();
             }
 
-            XpoDefault.Session.CommitTransaction();     // 提交事务
+            m.ReleaseMutex();       // 释放锁
         }
 
         /// <summary>
@@ -134,7 +133,7 @@ namespace Leo2.Controller
         /// <returns></returns>
         public XPCollection<Page> GetSubPages(int oid)
         {
-            return new XPCollection<Page>(new Session(), CriteriaOperator.Parse("Parent_ID = ?", oid));
+            return new XPCollection<Page>(XpoDefault.Session, CriteriaOperator.Parse("Parent_ID = ?", oid));
         }
 
 
@@ -195,7 +194,7 @@ namespace Leo2.Controller
         // 批量下载所有的page的内容
         public bool DownloadPageContent(CancellationToken ct)
         {
-            XPCollection<Page> pages = new XPCollection<Page>(new Session(XpoDefault.DataLayer), CriteriaOperator.Parse("Is_Down = ?", false));
+            XPCollection<Page> pages = new XPCollection<Page>(XpoDefault.Session, CriteriaOperator.Parse("Is_Down = ?", false));
             foreach(Page p in pages)
             {
                 if (ct.IsCancellationRequested)
@@ -205,7 +204,7 @@ namespace Leo2.Controller
                 }
                 else
                 {
-                    p.ParentWeb.Rule.GetSingleContentWithSave(p);
+                    p.ParentWeb.Rule.GetPageContent(p);
 
                     // 发出下载完成事件
                     PageDownloadCompleteEventArgs e = new PageDownloadCompleteEventArgs(p);

@@ -25,11 +25,10 @@ namespace Leo2.View
 {
     public partial class frmMain : DevExpress.XtraEditors.XtraForm
     {
-        private LeoController m_controller;     // 当前的控制器
+        private LeoController m_controller;         // 当前的控制器
         private int m_current_web_oid = -1;         // 当前列表显示的ID值
         private XPCollection<Web> m_webs;
-        private XPCollection<Page> m_pages;
-        private Task m_task = null;            // Web扫描的线程
+        private Task m_task = null;                 // Web扫描的线程
 
         // 构造函数，初始化必要的数据
         public frmMain(LeoController controller)
@@ -42,7 +41,10 @@ namespace Leo2.View
         // 载入时，初始化界面
         private void frmMain_Load(object sender, EventArgs e)
         {
+            // 初始化树
             InitTree();
+
+            // 状态行的二个进度不显示出来
             beiStatus.Visibility = DevExpress.XtraBars.BarItemVisibility.Never;
             beiProcess.Visibility = DevExpress.XtraBars.BarItemVisibility.Never;
         }
@@ -55,7 +57,6 @@ namespace Leo2.View
             treeList1.KeyFieldName = "Oid";
             treeList1.ParentFieldName = "Parent_ID";
             treeList1.DataSource = webs;
-            //treeList1.ExpandAll();
         }
 
 
@@ -123,7 +124,7 @@ namespace Leo2.View
 
             this.Cursor = Cursors.WaitCursor;   // 设置忙光标
 
-            m_batch_webs = new XPCollection<Web>(new Session(XpoDefault.DataLayer), CriteriaOperator.Parse("Is_Search = ?", true));
+            m_batch_webs = new XPCollection<Web>(XpoDefault.Session, CriteriaOperator.Parse("Is_Search = ?", true));
             Task taskA = Task.Factory.StartNew(() => BatchStartSingleScan());
 
             this.Cursor = Cursors.Default;      // 光标恢复正常
@@ -205,7 +206,7 @@ namespace Leo2.View
 
             // 取得对应的Web
             int web_id = int.Parse(treeList1.FocusedNode[treeOid].ToString());
-            XPCollection<Web> webs = new XPCollection<Web>(new Session(XpoDefault.DataLayer),
+            XPCollection<Web> webs = new XPCollection<Web>(XpoDefault.Session,
                 CriteriaOperator.Parse("Oid = ?", web_id));
             Debug.Assert(webs.Count() == 1);
             Web current_web = webs[0];
@@ -293,21 +294,6 @@ namespace Leo2.View
             }
         }
 
-        //private void UpdateAll(TreeListNode node, bool update_all = false)
-        //{
-        //    foreach (TreeListNode child in node.Nodes)
-        //    {
-        //        if ((bool)child[treeIsSearch])
-        //        {
-        //            m_controller.DownloadPageFromURL(int.Parse(child[treeOid].ToString()), update_all);
-        //        }
-
-        //        // 如果有子结点，就继续遍历
-        //        if (child.Nodes.Count > 0)
-        //            UpdateAll(child);
-        //    }
-        //}
-
         // 下载page,只要没有下载的PAGE，会全部下载
         CancellationTokenSource cts = null;
         private void DownloadPageContent()
@@ -361,8 +347,8 @@ namespace Leo2.View
                 int oid = int.Parse(treeList1.FocusedNode[treeOid].ToString());     // 取得当前的ID
                 if (oid != m_current_web_oid || gridView1.RowCount <= 0 || force_refresh)            // 如果ID已经更改了就刷新
                 {
-                    m_pages = m_controller.GetSubPages(oid);
-                    gridControl1.DataSource = m_pages.ToList<Page>();
+                    //m_pages = m_controller.GetSubPages(oid);
+                    gridControl1.DataSource = m_controller.GetSubPages(oid);
 
                     m_current_web_oid = oid;
                 }
@@ -386,16 +372,18 @@ namespace Leo2.View
                 ChangeWebUnReadCount();                 // 更新数量
             }
 
-            Page page = m_pages.FirstOrDefault(p => p.Oid == oid);
-            if (page != null)
-            {
-                page.Is_Read = true;
-                webBrowser1.DocumentText = page.DisplayContent();
-            }
+            // 取得当前对应的Page
+            XPCollection<Page> list = (XPCollection<Page>)gridControl1.DataSource;
+            var pages = from p in list
+                       where p.Oid == oid
+                       select p;
+            if (pages.Count() <= 0)
+                return;
+
+            Page page = pages.ElementAt(0);
+            page.Is_Read = true;
+            webBrowser1.DocumentText = page.DisplayContent();
             gridView1.RefreshData();
         }
-
-
-
     }
 }

@@ -163,21 +163,17 @@ a:visited {text-decoration: none}
         /// <summary>
         /// 网页内容（已经截取的）
         /// </summary>
-        [Size(SizeAttribute.Unlimited)]
+        [NonPersistent]
         public string Content
         {
-            get { return m_content; }
-            set { SetPropertyValue<string>("Content", ref m_content, value); }
-        }
-
-
-        /// <summary>
-        /// 设置当前网页已读
-        /// </summary>
-        public void ReadyRead()
-        {
-            this.Is_Read = true;
-            this.Save();
+            get 
+            {
+                if (string.IsNullOrEmpty(m_content))
+                {
+                    m_content = this.GetContent();
+                }
+                return m_content; 
+            }
         }
 
         private Web m_parentweb = null;
@@ -188,7 +184,7 @@ a:visited {text-decoration: none}
             {
                 if(m_parentweb == null)
                 {
-                    XPCollection<Web> webs = new XPCollection<Web>(new Session(XpoDefault.DataLayer),
+                    XPCollection<Web> webs = new XPCollection<Web>(XpoDefault.Session,
                         CriteriaOperator.Parse("Oid = ?", this.m_parent_id));
                     if (webs.Count > 0)
                         m_parentweb = webs[0];
@@ -203,8 +199,7 @@ a:visited {text-decoration: none}
         /// <returns></returns>
         public string DisplayContent()
         {
-            m_content = GetContentFromFile(this);
-            return string.Format(m_template, m_title, m_content, m_css);
+            return string.Format(m_template, m_title, Content, m_css);
         }
 
 
@@ -213,23 +208,41 @@ a:visited {text-decoration: none}
         /// </summary>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static string GetContentFromFile(Page page)
+        public string GetContent()
         {
             string result = "";
-            string filename = GetFilePath(page);
+            string filename = GetFilePath();
             //如果没有找到文件，就先下载
             if (!File.Exists(filename))
             {
-                Leo2.Rule.BaseRule br = page.ParentWeb.Rule;
-                if (br == null)
-                    return "";
+                if (ParentWeb != null && ParentWeb.Rule != null)
+                {
+                    string content = ParentWeb.Rule.GetPageContent(this);
+                    string cdate = ParentWeb.Rule.GetPageDate(this);
+                    if(!string.IsNullOrEmpty(content))
+                    {
+                        // 同一时间只能一个线程保存数据
+                        System.Threading.Mutex m = new System.Threading.Mutex(false, "SaveDB");
+                        m.WaitOne();
+                        using (UnitOfWork uow = new UnitOfWork(XpoDefault.DataLayer))
+                        {
+                            this.Is_Down = true;
+                            this.CDate = cdate;
+                            this.SaveContentToFile(content);
+                            this.Save();
 
-                return br.GetSingleContentWithSave(page);
+                            uow.CommitChanges();
+                        }
+                        m.ReleaseMutex();
+                    }
+                    return content;
+                }
+                else
+                    return "";
             }
-            else
+            else  //存在
             {
                 StreamReader srt = new StreamReader(filename, Convert.ToBoolean(FileMode.Open));
-                //存在
                 result = srt.ReadToEnd();
                 srt.Close();
                 return result;
@@ -245,7 +258,7 @@ a:visited {text-decoration: none}
         /// </summary>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static string GetFilePath(Page page)
+        private string GetFilePath()
         {
             //获得当前目录
             string dir = Directory.GetCurrentDirectory();
@@ -254,13 +267,41 @@ a:visited {text-decoration: none}
                 dir = dir + @"\";
             }
 
-            dir += String.Format(@"content\{0}", page.Parent_ID);
+            dir += String.Format(@"content\{0}", this.Parent_ID);
             if (!Directory.Exists(dir))            //判断目录是否存在
             {
                 Directory.CreateDirectory(dir);
             }
 
-            return string.Format(@"{0}\{1}.html", dir, page.Oid);// +@"\Content.html";
+            return string.Format(@"{0}\{1}.html", dir, this.Oid);// +@"\Content.html";
+        }
+
+        /// <summary>
+        /// 把网页的内容存到文件中
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        private bool SaveContentToFile(string content)
+        {
+            try
+            {
+                //目录结构：当前目录/content/父ID目录/当前ID.html
+                string filename = GetFilePath();
+                using (FileStream fst = new FileStream(filename, FileMode.Append))
+                {
+                    //写数据到a.txt格式
+                    using (StreamWriter swt = new StreamWriter(fst, System.Text.Encoding.GetEncoding("utf-8")))
+                    {
+                        swt.Write(content);
+                    }
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
