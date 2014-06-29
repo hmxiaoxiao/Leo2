@@ -377,7 +377,7 @@ namespace Leo2.Rule
                 //  对于每个取得的新页面，判断是否已经存在，如果不存在就保存
                 foreach (Page page in e.pages)      
                 {
-                    XPCollection<Page> pages = new XPCollection<Page>(XpoDefault.Session,
+                    XPCollection<Page> pages = new XPCollection<Page>(uow,
                         CriteriaOperator.Parse("URL = ?", page.URL));
                     if (pages.Count() == 0)
                     {
@@ -433,19 +433,28 @@ namespace Leo2.Rule
             return "";
         }
 
+
+        // 将网页中的图片地址过滤一下。
         private string FilterImage(HtmlNode node)
         {
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(node.InnerHtml);
             HtmlNodeCollection nc = doc.DocumentNode.SelectNodes("//img");
-            foreach(HtmlNode n in nc)
+            if (nc != null)
             {
-                //string src = GetRightImageURL(n.Attributes["src"].ToString());
-                //HtmlAttribute attr = new HtmlAttribute();
-                n.Attributes["src"].Value = GetRightImageURL(n.Attributes["src"].Value);
-            }
+                foreach (HtmlNode n in nc)
+                {
+                    //string src = GetRightImageURL(n.Attributes["src"].ToString());
+                    //HtmlAttribute attr = new HtmlAttribute();
+                    n.Attributes["src"].Value = GetRightImageURL(n.Attributes["src"].Value);
+                }
 
-            return doc.DocumentNode.InnerHtml;
+                return doc.DocumentNode.InnerHtml;
+            }
+            else
+            {
+                return node.InnerHtml;
+            }
         }
 
 

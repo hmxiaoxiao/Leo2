@@ -194,17 +194,15 @@ namespace Leo2.Model
             XPCollection<Web> webs = new XPCollection<Web>(XpoDefault.Session);
             if (webs.Count == 0)
             {
-                using (UnitOfWork uow = new UnitOfWork(XpoDefault.DataLayer))
-                {
-                    uow.BeginTransaction();
-
-                    Web web001 = new Web(uow);
+                //using (UnitOfWork XpoDefault.Session = new UnitOfWork(XpoDefault.DataLayer))
+                //{
+                    Web web001 = new Web(XpoDefault.Session);
                     web001.Parent_ID = 0;
                     web001.Name = "国资委";
                     web001.Is_Search = false;
                     web001.Save();
 
-                    Web web001001 = new Web(uow);
+                    Web web001001 = new Web(XpoDefault.Session);
                     web001001.Parent_ID = web001.Oid;
                     web001001.Name = "国资要闻";
                     web001001.URL = "http://www.sasac.gov.cn/n1180/n20240/n20259/index.html";
@@ -214,7 +212,7 @@ namespace Leo2.Model
                     web001001.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
                     web001001.Save();
 
-                    Web web001006 = new Web(uow);
+                    Web web001006 = new Web(XpoDefault.Session);
                     web001006.Parent_ID = web001.Oid;
                     web001006.Name = "国有经济";
                     web001006.URL = "http://www.sasac.gov.cn/n1180/n1271/n20515/n2697206/gyjj.html";
@@ -224,7 +222,7 @@ namespace Leo2.Model
                     web001006.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
                     web001006.Save();
 
-                    Web web001007 = new Web(uow);
+                    Web web001007 = new Web(XpoDefault.Session);
                     web001007.Parent_ID = web001.Oid;
                     web001007.Name = "国资监管";
                     web001007.URL = "http://www.sasac.gov.cn/n1180/n1271/n20515/n2697175/gzjg.html";
@@ -234,7 +232,7 @@ namespace Leo2.Model
                     web001007.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
                     web001007.Save();
 
-                    Web web001003 = new Web(uow);
+                    Web web001003 = new Web(XpoDefault.Session);
                     web001003.Parent_ID = web001.Oid;
                     web001003.Name = "国资改革";
                     web001003.URL = "http://www.sasac.gov.cn/n1180/n1271/n20515/n2697190/gqgg.html";
@@ -244,7 +242,7 @@ namespace Leo2.Model
                     web001003.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
                     web001003.Save();
 
-                    Web web001004 = new Web(uow);
+                    Web web001004 = new Web(XpoDefault.Session);
                     web001004.Parent_ID = web001.Oid;
                     web001004.Name = "中央企业动态";
                     web001004.URL = "http://www.sasac.gov.cn/n1180/n1226/n2410/index.html";
@@ -254,7 +252,7 @@ namespace Leo2.Model
                     web001004.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
                     web001004.Save();
 
-                    Web web001005 = new Web(uow);
+                    Web web001005 = new Web(XpoDefault.Session);
                     web001005.Parent_ID = web001.Oid;
                     web001005.Name = "地方国资动态";
                     web001005.URL = "http://www.sasac.gov.cn/n1180/n1271/n1286/n3891/index.html";
@@ -264,13 +262,13 @@ namespace Leo2.Model
                     web001005.m_page_xpath = "/html[1]/body[1]/table[2]/tr[1]/td[2]/table[11]/tr[1]/td[1]";
                     web001005.Save();
 
-                    Web web002 = new Web(uow);
+                    Web web002 = new Web(XpoDefault.Session);
                     web002.Parent_ID = 0;
                     web002.Name = "中国核工业集团公司";
                     web002.Is_Search = false;
                     web002.Save();
 
-                    Web web002001 = new Web(uow);
+                    Web web002001 = new Web(XpoDefault.Session);
                     web002001.Parent_ID = web002.Oid;
                     web002001.Name = "中核要闻";
                     web002001.URL = "http://www.cnnc.com.cn/tabid/293/Default.aspx";
@@ -280,7 +278,7 @@ namespace Leo2.Model
                     web002001.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
                     web002001.Save();
 
-                    Web web002002 = new Web(uow);
+                    Web web002002 = new Web(XpoDefault.Session);
                     web002002.Parent_ID = web002.Oid;
                     web002002.Name = "集团快讯";
                     web002002.URL = "http://www.cnnc.com.cn/publish/portal0/tab664/module2138/more.htm";
@@ -290,7 +288,7 @@ namespace Leo2.Model
                     web002002.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
                     web002002.Save();
 
-                    Web web002003 = new Web(uow);
+                    Web web002003 = new Web(XpoDefault.Session);
                     web002003.Parent_ID = web002.Oid;
                     web002003.Name = "一线动态";
                     web002003.URL = "http://www.cnnc.com.cn/publish/portal0/tab664/module2125/more.htm";
@@ -300,7 +298,7 @@ namespace Leo2.Model
                     web002003.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
                     web002003.Save();
 
-                    Web web002004 = new Web(uow);
+                    Web web002004 = new Web(XpoDefault.Session);
                     web002004.Parent_ID = web002.Oid;
                     web002004.Name = "综合资讯";
                     web002004.URL = "http://www.cnnc.com.cn/publish/portal0/tab664/module2127/more.htm";
@@ -310,7 +308,7 @@ namespace Leo2.Model
                     web002004.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
                     web002004.Save();
 
-                    Web web002005 = new Web(uow);
+                    Web web002005 = new Web(XpoDefault.Session);
                     web002005.Parent_ID = web002.Oid;
                     web002005.Name = "媒体聚焦";
                     web002005.URL = "http://www.cnnc.com.cn/publish/portal0/tab664/module2126/more.htm";
@@ -320,7 +318,7 @@ namespace Leo2.Model
                     web002005.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
                     web002005.Save();
 
-                    Web web002006 = new Web(uow);
+                    Web web002006 = new Web(XpoDefault.Session);
                     web002006.Parent_ID = web002.Oid;
                     web002006.Name = "风采中核";
                     web002006.URL = "http://www.cnnc.com.cn/publish/portal0/tab664/module2128/more.htm";
@@ -330,13 +328,13 @@ namespace Leo2.Model
                     web002006.m_page_xpath = "//div[@id='ess_ctr2251_ModuleContent']/table";
                     web002006.Save();
 
-                    Web web003 = new Web(uow);
+                    Web web003 = new Web(XpoDefault.Session);
                     web003.Parent_ID = 0;
                     web003.Name = "中国核工业建设集团公司";
                     web003.Is_Search = false;
                     web003.Save();
 
-                    Web web003001 = new Web(uow);
+                    Web web003001 = new Web(XpoDefault.Session);
                     web003001.Parent_ID = web003.Oid;
                     web003001.Name = "重要新闻";
                     web003001.URL = "http://www.cnecc.com/g783/m877/mp1.aspx";
@@ -346,7 +344,7 @@ namespace Leo2.Model
                     web003001.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
                     web003001.Save();
 
-                    Web web003002 = new Web(uow);
+                    Web web003002 = new Web(XpoDefault.Session);
                     web003002.Parent_ID = web003.Oid;
                     web003002.Name = "公司新闻";
                     web003002.URL = "http://www.cnecc.com/g293.aspx";
@@ -356,7 +354,7 @@ namespace Leo2.Model
                     web003002.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
                     web003002.Save();
 
-                    Web web003003 = new Web(uow);
+                    Web web003003 = new Web(XpoDefault.Session);
                     web003003.Parent_ID = web003.Oid;
                     web003003.Name = "国资动态";
                     web003003.URL = "http://www.cnecc.com/g672/m1574.aspx";
@@ -366,7 +364,7 @@ namespace Leo2.Model
                     web003003.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
                     web003003.Save();
 
-                    Web web003004 = new Web(uow);
+                    Web web003004 = new Web(XpoDefault.Session);
                     web003004.Parent_ID = web003.Oid;
                     web003004.Name = "关注与视野";
                     web003004.URL = "http://www.cnecc.com/g687/m1575.aspx";
@@ -376,7 +374,7 @@ namespace Leo2.Model
                     web003004.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
                     web003004.Save();
 
-                    Web web003005 = new Web(uow);
+                    Web web003005 = new Web(XpoDefault.Session);
                     web003005.Parent_ID = web003.Oid;
                     web003005.Name = "工程动态";
                     web003005.URL = "http://www.cnecc.com/g295.aspx";
@@ -386,7 +384,7 @@ namespace Leo2.Model
                     web003005.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
                     web003005.Save();
 
-                    Web web003006 = new Web(uow);
+                    Web web003006 = new Web(XpoDefault.Session);
                     web003006.Parent_ID = web003.Oid;
                     web003006.Name = "行业资讯";
                     web003006.URL = "http://www.cnecc.com/g299.aspx";
@@ -396,13 +394,13 @@ namespace Leo2.Model
                     web003006.m_page_xpath = "//div[@id='dnn_ctr930_ModuleContent']|//div[@id='dnn_ContentPane']";
                     web003006.Save();
 
-                    Web web004 = new Web(uow);
+                    Web web004 = new Web(XpoDefault.Session);
                     web004.Parent_ID = 0;
                     web004.Name = "中国航天科技集团公司";
                     web004.Is_Search = false;
                     web004.Save();
 
-                    Web web004001 = new Web(uow);
+                    Web web004001 = new Web(XpoDefault.Session);
                     web004001.Parent_ID = web004.Oid;
                     web004001.Name = "集团要闻";
                     web004001.URL = "http://www.spacechina.com/n25/n144/n206/n214/index.html";
@@ -412,7 +410,7 @@ namespace Leo2.Model
                     web004001.m_page_xpath = "//div[@id='mainart']/table/tr/td/table[2]";
                     web004001.Save();
 
-                    Web web004002 = new Web(uow);
+                    Web web004002 = new Web(XpoDefault.Session);
                     web004002.Parent_ID = web004.Oid;
                     web004002.Name = "综合新闻";
                     web004002.URL = "http://www.spacechina.com/n25/n144/n206/n216/index.html";
@@ -422,7 +420,7 @@ namespace Leo2.Model
                     web004002.m_page_xpath = "//div[@id='mainart']/table/tr/td/table[2]";
                     web004002.Save();
 
-                    Web web004003 = new Web(uow);
+                    Web web004003 = new Web(XpoDefault.Session);
                     web004003.Parent_ID = web004.Oid;
                     web004003.Name = "产经信息";
                     web004003.URL = "http://www.spacechina.com/n25/n144/n206/n220/index.html";
@@ -432,7 +430,7 @@ namespace Leo2.Model
                     web004003.m_page_xpath = "//div[@id='mainart']/table/tr/td/table[2]";
                     web004003.Save();
 
-                    Web web004004 = new Web(uow);
+                    Web web004004 = new Web(XpoDefault.Session);
                     web004004.Parent_ID = web004.Oid;
                     web004004.Name = "通知公告";
                     web004004.URL = "http://www.spacechina.com/n25/n144/n206/n218/index.html";
@@ -442,7 +440,7 @@ namespace Leo2.Model
                     web004004.m_page_xpath = "//div[@id='mainart']/table/tr/td/table[2]";
                     web004004.Save();
 
-                    Web web004005 = new Web(uow);
+                    Web web004005 = new Web(XpoDefault.Session);
                     web004005.Parent_ID = web004.Oid;
                     web004005.Name = "媒体聚焦";
                     web004005.URL = "http://www.spacechina.com/n25/n144/n206/n224/index.html";
@@ -452,7 +450,7 @@ namespace Leo2.Model
                     web004005.m_page_xpath = "//div[@id='mainart']/table/tr/td/table[2]";
                     web004005.Save();
 
-                    Web web004006 = new Web(uow);
+                    Web web004006 = new Web(XpoDefault.Session);
                     web004006.Parent_ID = web004.Oid;
                     web004006.Name = "央企视野";
                     web004006.URL = "http://www.spacechina.com/n25/n144/n208/n130547/index.html";
@@ -462,7 +460,7 @@ namespace Leo2.Model
                     web004006.m_page_xpath = "//div[@id='mainart']/table/tr/td/table[2]";
                     web004006.Save();
 
-                    Web web004007 = new Web(uow);
+                    Web web004007 = new Web(XpoDefault.Session);
                     web004007.Parent_ID = web004.Oid;
                     web004007.Name = "军工信息";
                     web004007.URL = "http://www.spacechina.com/n25/n144/n208/n230/index.html";
@@ -472,13 +470,13 @@ namespace Leo2.Model
                     web004007.m_page_xpath = "//div[@id='mainart']/table/tr/td/table[2]";
                     web004007.Save();
 
-                    Web web005 = new Web(uow);
+                    Web web005 = new Web(XpoDefault.Session);
                     web005.Parent_ID = 0;
                     web005.Name = "中国航天科工集团公司";
                     web005.Is_Search = false;
                     web005.Save();
 
-                    Web web005001 = new Web(uow);
+                    Web web005001 = new Web(XpoDefault.Session);
                     web005001.Parent_ID = web005.Oid;
                     web005001.Name = "要闻导读";
                     web005001.URL = "http://www.casic.com.cn/n99188/n470321/index.html";
@@ -488,7 +486,7 @@ namespace Leo2.Model
                     web005001.m_page_xpath = "/html/body/table[5]/tr/td";
                     web005001.Save();
 
-                    Web web005002 = new Web(uow);
+                    Web web005002 = new Web(XpoDefault.Session);
                     web005002.Parent_ID = web005.Oid;
                     web005002.Name = "国资信息";
                     web005002.URL = "http://www.casic.com.cn/n103/n496141/index.html";
@@ -498,7 +496,7 @@ namespace Leo2.Model
                     web005002.m_page_xpath = "/html/body/table[5]/tr/td";
                     web005002.Save();
 
-                    Web web005003 = new Web(uow);
+                    Web web005003 = new Web(XpoDefault.Session);
                     web005003.Parent_ID = web005.Oid;
                     web005003.Name = "经营动态";
                     web005003.URL = "http://www.casic.com.cn/n103/n135/n1008321/index.html";
@@ -508,7 +506,7 @@ namespace Leo2.Model
                     web005003.m_page_xpath = "/html/body/table[5]/tr/td";
                     web005003.Save();
 
-                    Web web005004 = new Web(uow);
+                    Web web005004 = new Web(XpoDefault.Session);
                     web005004.Parent_ID = web005.Oid;
                     web005004.Name = "合作交流";
                     web005004.URL = "http://www.casic.com.cn/n103/n135/n1008323/index.html";
@@ -518,7 +516,7 @@ namespace Leo2.Model
                     web005004.m_page_xpath = "/html/body/table[5]/tr/td";
                     web005004.Save();
 
-                    Web web005005 = new Web(uow);
+                    Web web005005 = new Web(XpoDefault.Session);
                     web005005.Parent_ID = web005.Oid;
                     web005005.Name = "改革发展";
                     web005005.URL = "http://www.casic.com.cn/n103/n135/n1008325/index.html";
@@ -528,7 +526,7 @@ namespace Leo2.Model
                     web005005.m_page_xpath = "/html/body/table[5]/tr/td";
                     web005005.Save();
 
-                    Web web005006 = new Web(uow);
+                    Web web005006 = new Web(XpoDefault.Session);
                     web005006.Parent_ID = web005.Oid;
                     web005006.Name = "媒体聚焦";
                     web005006.URL = "http://www.casic.com.cn/n103/n139/index.html";
@@ -538,7 +536,7 @@ namespace Leo2.Model
                     web005006.m_page_xpath = "/html/body/table[5]/tr/td";
                     web005006.Save();
 
-                    Web web005007 = new Web(uow);
+                    Web web005007 = new Web(XpoDefault.Session);
                     web005007.Parent_ID = web005.Oid;
                     web005007.Name = "军工信息";
                     web005007.URL = "http://www.casic.com.cn/n103/n137/index.html";
@@ -548,13 +546,13 @@ namespace Leo2.Model
                     web005007.m_page_xpath = "/html/body/table[5]/tr/td";
                     web005007.Save();
 
-                    Web web006 = new Web(uow);
+                    Web web006 = new Web(XpoDefault.Session);
                     web006.Parent_ID = 0;
                     web006.Name = "中国航空工业集团公司";
                     web006.Is_Search = false;
                     web006.Save();
 
-                    Web web006001 = new Web(uow);
+                    Web web006001 = new Web(XpoDefault.Session);
                     web006001.Parent_ID = web006.Oid;
                     web006001.Name = "集团新闻";
                     web006001.URL = "http://www.avic.com.cn/cn/xwzx/jtxw/index.shtml";
@@ -565,7 +563,7 @@ namespace Leo2.Model
                     web006001.m_page_xpath = "//div[@class='leftevery']";
                     web006001.Save();
 
-                    Web web006002 = new Web(uow);
+                    Web web006002 = new Web(XpoDefault.Session);
                     web006002.Parent_ID = web006.Oid;
                     web006002.Name = "国资委新闻";
                     web006002.URL = "http://www.avic.com.cn/cn/xwzx/gzwxw/index.shtml";
@@ -576,7 +574,7 @@ namespace Leo2.Model
                     web006002.m_page_xpath = "//div[@class='leftevery']";
                     web006002.Save();
 
-                    Web web006003 = new Web(uow);
+                    Web web006003 = new Web(XpoDefault.Session);
                     web006003.Parent_ID = web006.Oid;
                     web006003.Name = "成员动态";
                     web006003.URL = "http://www.avic.com.cn/cn/xwzx/cydt/index.shtml";
@@ -587,7 +585,7 @@ namespace Leo2.Model
                     web006003.m_page_xpath = "//div[@class='leftevery']";
                     web006003.Save();
 
-                    Web web006004 = new Web(uow);
+                    Web web006004 = new Web(XpoDefault.Session);
                     web006004.Parent_ID = web006.Oid;
                     web006004.Name = "行业动态";
                     web006004.URL = "http://www.avic.com.cn/cn/xwzx/xydt/index.shtml";
@@ -598,7 +596,7 @@ namespace Leo2.Model
                     web006004.m_page_xpath = "//div[@class='leftevery']";
                     web006004.Save();
 
-                    Web web006005 = new Web(uow);
+                    Web web006005 = new Web(XpoDefault.Session);
                     web006005.Parent_ID = web006.Oid;
                     web006005.Name = "图片新闻";
                     web006005.URL = "http://www.avic.com.cn/cn/xwzx/tpxw/index.shtml";
@@ -609,13 +607,13 @@ namespace Leo2.Model
                     web006005.m_page_xpath = "//div[@class='leftevery']";
                     web006005.Save();
 
-                    Web web007 = new Web(uow);
+                    Web web007 = new Web(XpoDefault.Session);
                     web007.Parent_ID = 0;
                     web007.Name = "中国船舶重工集团公司";
                     web007.Is_Search = false;
                     web007.Save();
 
-                    Web web007001 = new Web(uow);
+                    Web web007001 = new Web(XpoDefault.Session);
                     web007001.Parent_ID = web007.Oid;
                     web007001.Name = "集团新闻";
                     web007001.URL = "http://www.csic.com.cn/zgxwzx/csic_jtxw/";
@@ -626,7 +624,7 @@ namespace Leo2.Model
                     web007001.m_page_xpath = "/html/body/table[9]/tr/td[2]";
                     web007001.Save();
 
-                    Web web007002 = new Web(uow);
+                    Web web007002 = new Web(XpoDefault.Session);
                     web007002.Parent_ID = web007.Oid;
                     web007002.Name = "图片新闻";
                     web007002.URL = "http://www.csic.com.cn/zgxwzx/csic_tpxw/";
@@ -637,7 +635,7 @@ namespace Leo2.Model
                     web007002.m_page_xpath = "/html/body/table[9]/tr/td[2]";
                     web007002.Save();
 
-                    Web web007003 = new Web(uow);
+                    Web web007003 = new Web(XpoDefault.Session);
                     web007003.Parent_ID = web007.Oid;
                     web007003.Name = "国资要闻";
                     web007003.URL = "http://www.csic.com.cn/zgxwzx/gzdt/";
@@ -648,7 +646,7 @@ namespace Leo2.Model
                     web007003.m_page_xpath = "/html/body/table[9]/tr/td[2]";
                     web007003.Save();
 
-                    Web web007004 = new Web(uow);
+                    Web web007004 = new Web(XpoDefault.Session);
                     web007004.Parent_ID = web007.Oid;
                     web007004.Name = "成员动态";
                     web007004.URL = "http://www.csic.com.cn/zgxwzx/zgcydt/";
@@ -659,7 +657,7 @@ namespace Leo2.Model
                     web007004.m_page_xpath = "/html/body/table[9]/tr/td[2]";
                     web007004.Save();
 
-                    Web web007005 = new Web(uow);
+                    Web web007005 = new Web(XpoDefault.Session);
                     web007005.Parent_ID = web007.Oid;
                     web007005.Name = "船舶市场";
                     web007005.URL = "http://www.csic.com.cn/zgxwzx/csic_cshq/";
@@ -670,7 +668,7 @@ namespace Leo2.Model
                     web007005.m_page_xpath = "/html/body/table[9]/tr/td[2]";
                     web007005.Save();
 
-                    Web web007006 = new Web(uow);
+                    Web web007006 = new Web(XpoDefault.Session);
                     web007006.Parent_ID = web007.Oid;
                     web007006.Name = "物资配套";
                     web007006.URL = "http://www.csic.com.cn/zgxwzx/csic_gcsc/";
@@ -681,7 +679,7 @@ namespace Leo2.Model
                     web007006.m_page_xpath = "/html/body/table[9]/tr/td[2]";
                     web007006.Save();
 
-                    Web web007007 = new Web(uow);
+                    Web web007007 = new Web(XpoDefault.Session);
                     web007007.Parent_ID = web007.Oid;
                     web007007.Name = "通知公告";
                     web007007.URL = "http://www.csic.com.cn/zgxwzx/jttzgg/";
@@ -693,13 +691,13 @@ namespace Leo2.Model
                     web007007.Save();
 
 
-                    Web web109 = new Web(uow);
+                    Web web109 = new Web(XpoDefault.Session);
                     web109.Parent_ID = 0;
                     web109.Name = "华侨城集团公司";
                     web109.Is_Search = false;
                     web109.Save();
 
-                    Web web109001 = new Web(uow);
+                    Web web109001 = new Web(XpoDefault.Session);
                     web109001.Parent_ID = web109.Oid;
                     web109001.Name = "新闻中心";
                     web109001.URL = "http://www.chinaoct.com/category.aspx?NodeID=29";
@@ -710,7 +708,7 @@ namespace Leo2.Model
                     web109001.m_page_xpath = ".//*[@class='view_show clearall']";
                     web109001.Save();
 
-                    Web web109002 = new Web(uow);
+                    Web web109002 = new Web(XpoDefault.Session);
                     web109002.Parent_ID = web109.Oid;
                     web109002.Name = "电子公告";
                     web109002.URL = "http://www.chinaoct.com/category.aspx?NodeID=30";
@@ -721,7 +719,7 @@ namespace Leo2.Model
                     web109002.m_page_xpath = ".//*[@class='view_show clearall']";
                     web109002.Save();
 
-                    Web web109003 = new Web(uow);
+                    Web web109003 = new Web(XpoDefault.Session);
                     web109003.Parent_ID = web109.Oid;
                     web109003.Name = "专题专栏";
                     web109003.URL = "http://www.chinaoct.com/category.aspx?NodeID=31";
@@ -732,7 +730,7 @@ namespace Leo2.Model
                     web109003.m_page_xpath = ".//*[@class='view_show clearall']";
                     web109003.Save();
 
-                    Web web109004 = new Web(uow);
+                    Web web109004 = new Web(XpoDefault.Session);
                     web109004.Parent_ID = web109.Oid;
                     web109004.Name = "国资委要闻";
                     web109004.URL = "http://www.chinaoct.com/category.aspx?NodeID=254";
@@ -743,7 +741,7 @@ namespace Leo2.Model
                     web109004.m_page_xpath = ".//*[@class='view_show clearall']";
                     web109004.Save();
 
-                    Web web109005 = new Web(uow);
+                    Web web109005 = new Web(XpoDefault.Session);
                     web109005.Parent_ID = web109.Oid;
                     web109005.Name = "媒体聚焦国企";
                     web109005.URL = "http://www.chinaoct.com/category.aspx?NodeID=256";
@@ -754,7 +752,7 @@ namespace Leo2.Model
                     web109005.m_page_xpath = ".//*[@class='view_show clearall']";
                     web109005.Save();
 
-                    Web web109006 = new Web(uow);
+                    Web web109006 = new Web(XpoDefault.Session);
                     web109006.Parent_ID = web109.Oid;
                     web109006.Name = "华侨城改革发展";
                     web109006.URL = "http://www.chinaoct.com/category.aspx?NodeID=257";
@@ -767,13 +765,13 @@ namespace Leo2.Model
 
 
 
-                    Web web110 = new Web(uow);
+                    Web web110 = new Web(XpoDefault.Session);
                     web110.Parent_ID = 0;
                     web110.Name = "南光（集团）有限公司";
                     web110.Is_Search = false;
                     web110.Save();
 
-                    Web web110001 = new Web(uow);
+                    Web web110001 = new Web(XpoDefault.Session);
                     web110001.Parent_ID = web110.Oid;
                     web110001.Name = "领导活动";
                     web110001.URL = "http://www.namkwong.com.mo/enews/leader/";
@@ -784,7 +782,7 @@ namespace Leo2.Model
                     web110001.m_page_xpath = ".//*[@class='news_content w_news_content']";
                     web110001.Save();
 
-                    Web web110002 = new Web(uow);
+                    Web web110002 = new Web(XpoDefault.Session);
                     web110002.Parent_ID = web110.Oid;
                     web110002.Name = "集团动态";
                     web110002.URL = "http://www.namkwong.com.mo/enews/group/";
@@ -795,7 +793,7 @@ namespace Leo2.Model
                     web110002.m_page_xpath = ".//*[@class='news_content w_news_content']";
                     web110002.Save();
 
-                    Web web110003 = new Web(uow);
+                    Web web110003 = new Web(XpoDefault.Session);
                     web110003.Parent_ID = web110.Oid;
                     web110003.Name = "下属机构动态";
                     web110003.URL = "http://www.namkwong.com.mo/enews/subsidiaries/";
@@ -806,7 +804,7 @@ namespace Leo2.Model
                     web110003.m_page_xpath = ".//*[@class='news_content w_news_content']";
                     web110003.Save();
 
-                    Web web110004 = new Web(uow);
+                    Web web110004 = new Web(XpoDefault.Session);
                     web110004.Parent_ID = web110.Oid;
                     web110004.Name = "安全生产";
                     web110004.URL = "http://www.namkwong.com.mo/enews/safty/";
@@ -817,7 +815,7 @@ namespace Leo2.Model
                     web110004.m_page_xpath = ".//*[@class='news_content w_news_content']";
                     web110004.Save();
 
-                    Web web110005 = new Web(uow);
+                    Web web110005 = new Web(XpoDefault.Session);
                     web110005.Parent_ID = web110.Oid;
                     web110005.Name = "员工文娱活动";
                     web110005.URL = "http://www.namkwong.com.mo/enews/Culturalactivities/";
@@ -828,7 +826,7 @@ namespace Leo2.Model
                     web110005.m_page_xpath = ".//*[@class='news_content w_news_content']";
                     web110005.Save();
 
-                    Web web110006 = new Web(uow);
+                    Web web110006 = new Web(XpoDefault.Session);
                     web110006.Parent_ID = web110.Oid;
                     web110006.Name = "履行社会责任";
                     web110006.URL = "http://www.namkwong.com.mo/csr/csr/";
@@ -839,7 +837,7 @@ namespace Leo2.Model
                     web110006.m_page_xpath = ".//*[@class='news_content w_news_content']";
                     web110006.Save();
 
-                    Web web110007 = new Web(uow);
+                    Web web110007 = new Web(XpoDefault.Session);
                     web110007.Parent_ID = web110.Oid;
                     web110007.Name = "员工培训";
                     web110007.URL = "http://www.namkwong.com.mo/HumanResource/Staff_training/";
@@ -850,13 +848,13 @@ namespace Leo2.Model
                     web110007.m_page_xpath = ".//*[@class='news_content w_news_content']";
                     web110007.Save();
 
-                    Web web111 = new Web(uow);
+                    Web web111 = new Web(XpoDefault.Session);
                     web111.Parent_ID = 0;
                     web111.Name = "中国西电集团公司";
                     web111.Is_Search = false;
                     web111.Save();
 
-                    Web web111001 = new Web(uow);
+                    Web web111001 = new Web(XpoDefault.Session);
                     web111001.Parent_ID = web111.Oid;
                     web111001.Name = "国资要闻";
                     web111001.URL = "http://www.xd.com.cn/structure/zxyd/gzyw.htm";
@@ -867,7 +865,7 @@ namespace Leo2.Model
                     web111001.m_page_xpath = "//*[@id='组件外围表格']/tr/td/table[@class='maintable']";
                     web111001.Save();
 
-                    Web web111002 = new Web(uow);
+                    Web web111002 = new Web(XpoDefault.Session);
                     web111002.Parent_ID = web111.Oid;
                     web111002.Name = "关注与视野";
                     web111002.URL = "http://www.xd.com.cn/structure/zxyd/gzysy.htm";
@@ -878,7 +876,7 @@ namespace Leo2.Model
                     web111002.m_page_xpath = "//*[@id='组件外围表格']/tr/td/table[@class='maintable']";
                     web111002.Save();
 
-                    Web web111003 = new Web(uow);
+                    Web web111003 = new Web(XpoDefault.Session);
                     web111003.Parent_ID = web111.Oid;
                     web111003.Name = "集团动态";
                     web111003.URL = "http://www.xd.com.cn/structure/zxyd/jtdt.htm";
@@ -889,7 +887,7 @@ namespace Leo2.Model
                     web111003.m_page_xpath = "//*[@id='组件外围表格']/tr/td/table[@class='maintable']";
                     web111003.Save();
 
-                    Web web111004 = new Web(uow);
+                    Web web111004 = new Web(XpoDefault.Session);
                     web111003.Parent_ID = web111.Oid;
                     web111003.Name = "领导动态";
                     web111003.URL = "http://www.xd.com.cn/structure/zxyd/lddt.htm";
@@ -900,7 +898,7 @@ namespace Leo2.Model
                     web111003.m_page_xpath = "//*[@id='组件外围表格']/tr/td/table[@class='maintable']";
                     web111003.Save();
 
-                    Web web111005 = new Web(uow);
+                    Web web111005 = new Web(XpoDefault.Session);
                     web111003.Parent_ID = web111.Oid;
                     web111003.Name = "子公司动态";
                     web111003.URL = "http://www.xd.com.cn/structure/zxyd/zgsdt.htm";
@@ -912,19 +910,19 @@ namespace Leo2.Model
                     web111003.Save();
 
 
-                    Web web112 = new Web(uow);
+                    Web web112 = new Web(XpoDefault.Session);
                     web112.Parent_ID = 0;
                     web112.Name = "中国铁路物资总公司";
                     web112.Is_Search = false;
                     web112.Save();
 
-                    Web web112001 = new Web(uow);
+                    Web web112001 = new Web(XpoDefault.Session);
                     web112001.Parent_ID = web112.Oid;
                     web112001.Name = "公司动态";
                     web112001.Is_Search = false;
                     web112001.Save();
 
-                    Web web11200101 = new Web(uow);
+                    Web web11200101 = new Web(XpoDefault.Session);
                     web11200101.Parent_ID = web112001.Oid;
                     web11200101.Name = "集团公司动态";
                     web11200101.URL = "http://www.crmg.com.cn/p398.aspx";
@@ -935,7 +933,7 @@ namespace Leo2.Model
                     web11200101.m_page_xpath = ".//*[@id='zhd_ctr925_ModuleContent']/div/table";
                     web11200101.Save();
 
-                    Web web11200102 = new Web(uow);
+                    Web web11200102 = new Web(XpoDefault.Session);
                     web11200102.Parent_ID = web112001.Oid;
                     web11200102.Name = "子公司动态";
                     web11200102.URL = "http://www.crmg.com.cn/p397.aspx";
@@ -946,7 +944,7 @@ namespace Leo2.Model
                     web11200102.m_page_xpath = ".//*[@id='zhd_ctr925_ModuleContent']/div/table";
                     web11200102.Save();
 
-                    Web web112002 = new Web(uow);
+                    Web web112002 = new Web(XpoDefault.Session);
                     web112002.Parent_ID = web112.Oid;
                     web112002.Name = "公司告示";
                     web112002.URL = "http://www.crmg.com.cn/p369.aspx";
@@ -957,7 +955,7 @@ namespace Leo2.Model
                     web112002.m_page_xpath = ".//*[@id='zhd_ctr925_ModuleContent']/div/table";
                     web112002.Save();
 
-                    Web web112003 = new Web(uow);
+                    Web web112003 = new Web(XpoDefault.Session);
                     web112003.Parent_ID = web112.Oid;
                     web112003.Name = "市场资讯";
                     web112003.URL = "http://www.crmg.com.cn/p372.aspx";
@@ -968,7 +966,7 @@ namespace Leo2.Model
                     web112003.m_page_xpath = ".//*[@id='zhd_ctr925_ModuleContent']/div/table";
                     web112003.Save();
 
-                    Web web112004 = new Web(uow);
+                    Web web112004 = new Web(XpoDefault.Session);
                     web112004.Parent_ID = web112.Oid;
                     web112004.Name = "行业动态";
                     web112004.URL = "http://www.crmg.com.cn/p371.aspx";
@@ -979,13 +977,13 @@ namespace Leo2.Model
                     web112004.m_page_xpath = ".//*[@id='zhd_ctr925_ModuleContent']/div/table";
                     web112004.Save();
 
-                    Web web113 = new Web(uow);
+                    Web web113 = new Web(XpoDefault.Session);
                     web113.Parent_ID = 0;
                     web113.Name = "中国国新控股有限责任公司";
                     web113.Is_Search = false;
                     web113.Save();
 
-                    Web web113001 = new Web(uow);
+                    Web web113001 = new Web(XpoDefault.Session);
                     web113001.Parent_ID = web113.Oid;
                     web113001.Name = "公司动态";
                     web113001.URL = "http://www.crhc.cn/n12751492/n13812522/n13812591/index.html";
@@ -996,7 +994,7 @@ namespace Leo2.Model
                     web113001.m_page_xpath = "html/body/table[3]/tr/td/table[2]/tr/td";
                     web113001.Save();
 
-                    Web web113002 = new Web(uow);
+                    Web web113002 = new Web(XpoDefault.Session);
                     web113002.Parent_ID = web113.Oid;
                     web113002.Name = "企业告示";
                     web113002.URL = "http://www.crhc.cn/n12751492/n13812522/n13812626/index.html";
@@ -1007,7 +1005,7 @@ namespace Leo2.Model
                     web113002.m_page_xpath = "html/body/table[3]/tr/td/table[2]/tr/td";
                     web113002.Save();
 
-                    Web web11300301 = new Web(uow);
+                    Web web11300301 = new Web(XpoDefault.Session);
                     web11300301.Parent_ID = web113.Oid;
                     web11300301.Name = "中国华星集团公司";
                     web11300301.URL = "http://www.crhc.cn/n12751492/n13812522/n13812645/n13814550/index.html";
@@ -1018,7 +1016,7 @@ namespace Leo2.Model
                     web11300301.m_page_xpath = "html/body/table[3]/tr/td/table[2]/tr/td";
                     web11300301.Save();
 
-                    Web web11300302 = new Web(uow);
+                    Web web11300302 = new Web(XpoDefault.Session);
                     web11300302.Parent_ID = web113.Oid;
                     web11300302.Name = "国星有限责任公司";
                     web11300302.URL = "http://www.crhc.cn/n12751492/n13812522/n13812645/n14343081/index.html";
@@ -1029,7 +1027,7 @@ namespace Leo2.Model
                     web11300302.m_page_xpath = "html/body/table[3]/tr/td/table[2]/tr/td";
                     web11300302.Save();
 
-                    Web web11300303 = new Web(uow);
+                    Web web11300303 = new Web(XpoDefault.Session);
                     web11300303.Parent_ID = web113.Oid;
                     web11300303.Name = "中国文化产业发展集团公司";
                     web11300303.URL = "http://www.crhc.cn/n12751492/n13812522/n13812645/n14754595/index.html";
@@ -1040,8 +1038,8 @@ namespace Leo2.Model
                     web11300303.m_page_xpath = "html/body/table[3]/tr/td/table[2]/tr/td";
                     web11300303.Save();
 
-                    uow.CommitChanges();        //  保存所有的数据
-                }
+                    //XpoDefault.Session.CommitChanges();        //  保存所有的数据
+                //}
 
             }
         }
