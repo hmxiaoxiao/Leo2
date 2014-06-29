@@ -272,8 +272,13 @@ namespace Leo2.Rule
 
             // 分析里面的结点
             HtmlNodeCollection lists = doc.DocumentNode.SelectNodes(this.List_XPath);
+            if (lists == null)       // 象http://www.avic.com.cn/cn/xwzx/jtxw/index.shtml这个列表的最后一页就是空的。
+            {
+                return list;
+            }
 
             // 取所有符合要求的结点
+
             foreach (HtmlNode node in lists)
             {
                 // 生成一个新的page实例 

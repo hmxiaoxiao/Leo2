@@ -22,8 +22,9 @@ namespace Leo2.Rule
             LeoController.InitDatabase();       // 初始化数据库
 
             Web myweb = new Web(XpoDefault.Session);
-            myweb.URL = "http://www.casic.com.cn/n99188/n470321/index.html";
-            m_sasac = new www_casic_com_cn(myweb);
+            myweb.Encoding = "gb2312";      // 这个根据情况设置
+            myweb.URL = "http://www.avic.com.cn/cn/xwzx/jtxw/index.shtml";
+            m_sasac = new www_avic_com_cn(myweb);
             int i = m_sasac.MaxPage;
             Console.WriteLine(@"总共有{0}页", i);
 
@@ -36,7 +37,7 @@ namespace Leo2.Rule
         }
 
         private static int m_count = 0;
-        private static www_casic_com_cn m_sasac;
+        private static www_avic_com_cn m_sasac;
 
         public static void ShowMessage(object sender, BaseRule.ScanCompleteEventArgs e)
         {
