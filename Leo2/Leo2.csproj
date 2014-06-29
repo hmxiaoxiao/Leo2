@@ -104,6 +104,7 @@
     <Compile Include="Helper\WebHelper.cs" />
     <Compile Include="Rule\www_avic_com_cn.cs" />
     <Compile Include="Rule\www_casic_com_cn.cs" />
+    <Compile Include="Rule\www_chinaoct_com.cs" />
     <Compile Include="Rule\www_cnecc_com.cs" />
     <Compile Include="Rule\www_cnnc_com_cn.cs" />
     <Compile Include="Rule\www_csic_com_cn.cs" />

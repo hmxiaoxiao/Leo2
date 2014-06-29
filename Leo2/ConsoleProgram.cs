@@ -22,8 +22,8 @@ namespace Leo2.Rule
             LeoController.InitDatabase();       // 初始化数据库
 
             Web myweb = new Web(XpoDefault.Session);
-            myweb.Encoding = "gb2312";      // 这个根据情况设置
-            myweb.URL = "http://www.csic.com.cn/zgxwzx/csic_jtxw/";
+            //myweb.Encoding = "gb2312";      // 这个根据情况设置
+            myweb.URL = "http://www.chinaoct.com/category.aspx?NodeID=29";
             BaseRule rule = myweb.Rule;
             int i = rule.MaxPage;
             Console.WriteLine(@"总共有{0}页", i);
