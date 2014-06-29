@@ -107,6 +107,8 @@
     <Compile Include="Rule\www_chinaoct_com.cs" />
     <Compile Include="Rule\www_cnecc_com.cs" />
     <Compile Include="Rule\www_cnnc_com_cn.cs" />
+    <Compile Include="Rule\www_crhc_cn.cs" />
+    <Compile Include="Rule\www_crmg_com_cn.cs" />
     <Compile Include="Rule\www_csic_com_cn.cs" />
     <Compile Include="Rule\www_namkwong_com_mo.cs" />
     <Compile Include="Rule\www_sasac_gov_cn.cs" />

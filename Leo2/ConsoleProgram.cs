@@ -23,7 +23,7 @@ namespace Leo2.Rule
 
             Web myweb = new Web(XpoDefault.Session);
             //myweb.Encoding = "gb2312";      // 这个根据情况设置
-            myweb.URL = "http://www.xd.com.cn/structure/zxyd/gzyw.htm";
+            myweb.URL = "http://www.crhc.cn/n12751492/n13812522/n13812591/index.html";
             BaseRule rule = myweb.Rule;
             int i = rule.MaxPage;
             Console.WriteLine(@"总共有{0}页", i);
