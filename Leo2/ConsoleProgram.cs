@@ -23,26 +23,25 @@ namespace Leo2.Rule
 
             Web myweb = new Web(XpoDefault.Session);
             myweb.Encoding = "gb2312";      // 这个根据情况设置
-            myweb.URL = "http://www.avic.com.cn/cn/xwzx/jtxw/index.shtml";
-            m_sasac = new www_avic_com_cn(myweb);
-            int i = m_sasac.MaxPage;
+            myweb.URL = "http://www.csic.com.cn/zgxwzx/csic_jtxw/";
+            BaseRule rule = myweb.Rule;
+            int i = rule.MaxPage;
             Console.WriteLine(@"总共有{0}页", i);
 
-            m_sasac.PageScanComplete += ShowMessage;
+            rule.PageScanComplete += ShowMessage;
 
-            m_sasac.PrepareScan();
+            rule.PrepareScan();
 
             Console.WriteLine("按任意键退出");
             Console.ReadKey();
         }
 
         private static int m_count = 0;
-        private static www_avic_com_cn m_sasac;
 
         public static void ShowMessage(object sender, BaseRule.ScanCompleteEventArgs e)
         {
             m_count ++;
-            Console.WriteLine(@"已经下载了{0}页，共{1}页", m_count, m_sasac.MaxPage);
+            Console.WriteLine(@"已经下载了{0}页，共{1}页", m_count, e.web.MaxPage);
         }
     }
 }

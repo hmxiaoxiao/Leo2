@@ -106,6 +106,7 @@
     <Compile Include="Rule\www_casic_com_cn.cs" />
     <Compile Include="Rule\www_cnecc_com.cs" />
     <Compile Include="Rule\www_cnnc_com_cn.cs" />
+    <Compile Include="Rule\www_csic_com_cn.cs" />
     <Compile Include="Rule\www_sasac_gov_cn.cs" />
     <Compile Include="Rule\www_spacechina_com.cs" />
     <Compile Include="Model\Page.cs" />
