@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F28E25B9-5E9A-4DF9-BCF2-A8CC0608B78C}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Leo2</RootNamespace>
     <AssemblyName>Leo2</AssemblyName>
@@ -50,7 +50,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Leo2.Program</StartupObject>
+    <StartupObject>Leo2.Rule.ConsoleProgram</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>pro.ico</ApplicationIcon>
@@ -102,6 +102,7 @@
     <Compile Include="Controller\LeoController.cs" />
     <Compile Include="Rule\BaseRule.cs" />
     <Compile Include="Helper\WebHelper.cs" />
+    <Compile Include="Rule\www_casic_com_cn.cs" />
     <Compile Include="Rule\www_cnecc_com.cs" />
     <Compile Include="Rule\www_cnnc_com_cn.cs" />
     <Compile Include="Rule\www_sasac_gov_cn.cs" />
