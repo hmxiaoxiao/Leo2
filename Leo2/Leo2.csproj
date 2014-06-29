@@ -113,6 +113,7 @@
     <Compile Include="Rule\www_spacechina_com.cs" />
     <Compile Include="Model\Page.cs" />
     <Compile Include="Model\Web.cs" />
+    <Compile Include="Rule\www_xd_com_cn.cs" />
     <Compile Include="View\frmMain.cs">
       <SubType>Form</SubType>
     </Compile>

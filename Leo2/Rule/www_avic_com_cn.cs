@@ -11,7 +11,7 @@ using Leo2.Helper;
 
 namespace Leo2.Rule
 {
-    class www_avic_com_cn : BaseRule
+    public class www_avic_com_cn : BaseRule
     {
         private static readonly string list_xpath = "//ul[@class='lnews']/li/a";
         private static readonly string page_xpath = "//div[@class='leftevery']";

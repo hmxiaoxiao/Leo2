@@ -3,25 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-
 using Leo2.Model;
 using HtmlAgilityPack;
-using DevExpress.Xpo;
-using DevExpress.Data.Filtering;
 using Leo2.Helper;
 
 namespace Leo2.Rule
 {
-    public class www_csic_com_cn : BaseRule
+    public class www_xd_com_cn : BaseRule
     {
-        private static readonly string list_xpath = "/html/body/table[9]/tr/td[2]//a[@target='_blank']";
-        private static readonly string page_xpath = "/html/body/table[9]/tr/td[2]";
+        private static readonly string list_xpath = "//a[@class='CicroUM235B_0119_8943_xd_25_news_alistrow1']|//a[@class='CicroUM235B_0119_8943_xd_25_news_alistrow2']";
+        private static readonly string page_xpath = "//*[@id='组件外围表格']/tr/td/table[@class='maintable']";
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="url">列表的起始页</param>
-        public www_csic_com_cn(Web web)
+        public www_xd_com_cn(Web web)
             : base(web)
         {
             // 设置取数规则
@@ -34,7 +31,7 @@ namespace Leo2.Rule
             // 先读取内容 
             Uri u = new Uri(CurrentWeb.URL);
             HtmlDocument doc = WebHelper.GetHtmlDocument(CurrentWeb.URL, this.CurrentWeb.Encoding);
-            HtmlNodeCollection lists = doc.DocumentNode.SelectNodes("//a[@target='_parent']");
+            HtmlNodeCollection lists = doc.DocumentNode.SelectNodes("//td[@class='more']");
 
             // 先加上自己这一页
             m_list.Add(CurrentWeb.URL);
@@ -43,20 +40,16 @@ namespace Leo2.Rule
             foreach (HtmlNode node in lists)
             {
                 //Console.WriteLine(node.Attributes["href"]);
-                if(node.InnerText.IndexOf("末页") >=0)
+                int count = int.Parse(Regex.Match(node.FirstChild.InnerHtml, @"[\d]+").Value);
+                string url = "http://" + u.Authority;
+                for (int i = 0; i < u.Segments.Count() - 1; i++)
                 {
-                    string href = node.Attributes["href"].Value;
-                    int count = int.Parse(Regex.Match(href, @"[\d]+").Value);
-                    string url = "http://" + u.Authority;
-                    for (int i = 0; i < u.Segments.Count() - 1; i++)
-                    {
-                        url += u.Segments[i];
-                    }
-                    // 生成所有的列表联接
-                    for (int i = 1; i <= count; i++)
-                    {
-                        m_list.Add(string.Format(@"{0}index{1}.shtml", url, i));
-                    }
+                    url += u.Segments[i];
+                }
+                // 生成所有的列表联接
+                for (int i = 2; i <= count; i++)
+                {
+                    m_list.Add(string.Format(@"{0}{1}_{2}.html", url, u.Segments[u.Segments.Count()-1].Split('.')[0], i));
                 }
             }
             m_index = 1;
@@ -68,7 +61,7 @@ namespace Leo2.Rule
 
         protected override string GetNextLink(string list_url)
         {
-            if (m_index <= m_list.Count-1)
+            if (m_index < m_list.Count)
                 return m_list[m_index++];
             else
                 return "";                

@@ -9,7 +9,7 @@ using Leo2.Helper;
 
 namespace Leo2.Rule
 {
-    class www_namkwong_com_mo : BaseRule
+    public class www_namkwong_com_mo : BaseRule
     {
         private static readonly string list_xpath = ".//*[@class='list_news']//a";
         private static readonly string page_xpath = ".//*[@class='news_content w_news_content']";

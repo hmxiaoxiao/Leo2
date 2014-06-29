@@ -9,7 +9,7 @@ using Leo2.Helper;
 
 namespace Leo2.Rule
 {
-    class www_chinaoct_com : BaseRule
+    public class www_chinaoct_com : BaseRule
     {
         private static readonly string list_xpath = ".//*[@class='view_list']//a";
         private static readonly string page_xpath = ".//*[@class='view_show clearall']";
